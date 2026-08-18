@@ -53,6 +53,9 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   padding: 16px;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
   background-image: 
     radial-gradient(circle at 10% 20%, rgba(0, 163, 108, 0.08) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 40%);
@@ -60,8 +63,10 @@ body {
 }
 
 .container {
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* 頁頭 Header */
@@ -544,15 +549,26 @@ body {
 }
 
 @media (max-width: 768px) {
+  html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
   body {
-    padding: 10px 8px;
+    padding: 8px 4px;
+  }
+
+  .container {
+    width: 100%;
+    padding: 0 4px;
   }
 
   .app-header {
     flex-direction: column;
     align-items: stretch;
-    padding: 16px;
-    gap: 12px;
+    padding: 14px 12px;
+    gap: 10px;
     text-align: center;
   }
 
@@ -561,13 +577,14 @@ body {
   }
 
   .brand-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 22px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
   }
 
   .brand-title h1 {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
+    line-height: 1.3;
   }
 
   .header-status {
@@ -577,35 +594,36 @@ body {
   .refresh-btn {
     width: 100%;
     justify-content: center;
-    padding: 12px;
+    padding: 10px;
+    font-size: 0.85rem;
   }
 
   .card {
-    padding: 16px;
-    border-radius: 14px;
+    padding: 14px 12px;
+    border-radius: 12px;
   }
 
   .summary-card {
-    padding: 16px;
+    padding: 12px;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
   }
 
   .stat-box {
-    padding: 10px;
+    padding: 8px;
   }
 
   .stat-value {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
   }
 
   .comparison-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 10px;
   }
 
   .detour-card {
-    padding: 16px;
+    padding: 14px 12px;
   }
 
   .detour-header {
@@ -615,6 +633,12 @@ body {
 
   .detour-badge {
     align-self: flex-start;
+  }
+
+  .visual-timeline {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 
