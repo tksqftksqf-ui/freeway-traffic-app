@@ -58,7 +58,7 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
-  padding: 16px;
+  padding: 12px 8px;
   background-image: 
     radial-gradient(circle at 10% 20%, rgba(0, 163, 108, 0.08) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 40%);
@@ -70,6 +70,7 @@ body {
   max-width: 1280px;
   margin: 0 auto;
   box-sizing: border-box;
+  min-width: 0;
 }
 
 /* 頁頭 Header */
@@ -762,21 +763,44 @@ body {
 }
 
 @media (max-width: 768px) {
+  html, body {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
   body {
     padding: 8px 4px !important;
   }
 
-  .container {
+  .container,
+  .main-layout,
+  .sidebar,
+  .content-area,
+  .card,
+  .summary-card,
+  .detour-card,
+  .comparison-grid,
+  .turn-instructions,
+  .incidents-list {
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .container {
     padding: 0 4px !important;
   }
 
   .app-header {
     flex-direction: column !important;
     align-items: stretch !important;
-    padding: 14px 12px !important;
-    gap: 10px !important;
+    padding: 12px 10px !important;
+    gap: 8px !important;
     text-align: center !important;
+    min-width: 0 !important;
+    width: 100% !important;
   }
 
   .brand {
@@ -784,14 +808,14 @@ body {
   }
 
   .brand-icon {
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 20px !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 18px !important;
   }
 
   .brand-title h1 {
-    font-size: 1.05rem !important;
-    line-height: 1.3 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.2 !important;
   }
 
   .header-status {
@@ -805,13 +829,39 @@ body {
     font-size: 0.85rem !important;
   }
 
+  .highway-tabs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .highway-tab {
+    padding: 10px 4px !important;
+    font-size: 0.85rem !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .highway-tab span {
+    font-size: 0.88rem !important;
+  }
+
+  .highway-tab small {
+    font-size: 0.7rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .card {
-    padding: 14px 12px !important;
+    padding: 12px 10px !important;
     border-radius: 12px !important;
   }
 
   .summary-card {
-    padding: 12px !important;
+    padding: 10px !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 8px !important;
   }
@@ -821,7 +871,7 @@ body {
   }
 
   .stat-value {
-    font-size: 1.05rem !important;
+    font-size: 1rem !important;
   }
 
   .comparison-grid {
@@ -830,7 +880,7 @@ body {
   }
 
   .detour-card {
-    padding: 14px 12px !important;
+    padding: 12px 10px !important;
   }
 
   .detour-header {
@@ -848,16 +898,20 @@ body {
 
   .visual-timeline {
     width: 100% !important;
-    max-width: 100vw !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
     display: flex !important;
+    box-sizing: border-box !important;
   }
 
   .county-filter {
     width: 100% !important;
-    max-width: 100vw !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    box-sizing: border-box !important;
   }
 }
