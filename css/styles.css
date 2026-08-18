@@ -46,6 +46,12 @@
   padding: 0;
 }
 
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-family);
   background-color: var(--bg-dark);
@@ -53,9 +59,6 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   padding: 16px;
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
   background-image: 
     radial-gradient(circle at 10% 20%, rgba(0, 163, 108, 0.08) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 40%);
@@ -153,22 +156,16 @@ body {
   display: grid;
   grid-template-columns: 380px 1fr;
   gap: 24px;
+  width: 100%;
 }
 
-@media (max-width: 992px) {
-  .main-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* 左側邊欄：選擇與常用路線 */
 .sidebar {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
 }
 
-/* 卡片通用樣式 */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -177,6 +174,7 @@ body {
   box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 .card-title {
@@ -189,7 +187,6 @@ body {
   color: var(--text-primary);
 }
 
-/* 國道選擇切換鈕 (Highway Selector Tabs) */
 .highway-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -232,9 +229,9 @@ body {
   color: #60A5FA;
 }
 
-/* 表單控制項 (Form Controls) */
 .form-group {
   margin-bottom: 18px;
+  width: 100%;
 }
 
 .form-label {
@@ -252,6 +249,8 @@ body {
   padding-bottom: 8px;
   margin-bottom: 12px;
   scrollbar-width: thin;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .county-chip {
@@ -274,6 +273,7 @@ body {
 
 .select-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .select-control {
@@ -365,7 +365,6 @@ body {
   background: rgba(255, 215, 0, 0.25);
 }
 
-/* 常用路線區塊 (Saved Presets) */
 .presets-list {
   display: flex;
   flex-direction: column;
@@ -400,11 +399,6 @@ body {
   color: var(--text-primary);
 }
 
-.preset-route {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-}
-
 .preset-delete {
   background: none;
   border: none;
@@ -419,14 +413,13 @@ body {
   color: #EF4444;
 }
 
-/* 右側主內容：概覽、改道建議、分段細節與地圖 */
 .content-area {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
 }
 
-/* 概覽摘要卡片 (Summary Header Card) */
 .summary-card {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -436,6 +429,7 @@ body {
   border: 1px solid var(--border-color);
   padding: 24px;
   box-shadow: var(--shadow-card);
+  width: 100%;
 }
 
 .stat-box {
@@ -479,7 +473,6 @@ body {
   width: fit-content;
 }
 
-/* 智慧改道路線卡片 (Detour Recommendation Card) */
 .detour-card {
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
   border: 1px solid rgba(245, 158, 11, 0.4);
@@ -487,6 +480,7 @@ body {
   padding: 24px;
   position: relative;
   box-shadow: 0 10px 30px rgba(245, 158, 11, 0.1);
+  width: 100%;
 }
 
 .detour-card.smooth-route {
@@ -538,108 +532,6 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 20px;
-}
-
-/* 響應式裝置行動端極致優化 Media Queries */
-@media (max-width: 992px) {
-  .main-layout {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-  html, body {
-    width: 100%;
-    max-width: 100vw;
-    overflow-x: hidden;
-  }
-
-  body {
-    padding: 8px 4px;
-  }
-
-  .container {
-    width: 100%;
-    padding: 0 4px;
-  }
-
-  .app-header {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 14px 12px;
-    gap: 10px;
-    text-align: center;
-  }
-
-  .brand {
-    justify-content: center;
-  }
-
-  .brand-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 20px;
-  }
-
-  .brand-title h1 {
-    font-size: 1.05rem;
-    line-height: 1.3;
-  }
-
-  .header-status {
-    width: 100%;
-  }
-
-  .refresh-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 10px;
-    font-size: 0.85rem;
-  }
-
-  .card {
-    padding: 14px 12px;
-    border-radius: 12px;
-  }
-
-  .summary-card {
-    padding: 12px;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .stat-box {
-    padding: 8px;
-  }
-
-  .stat-value {
-    font-size: 1.05rem;
-  }
-
-  .comparison-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .detour-card {
-    padding: 14px 12px;
-  }
-
-  .detour-header {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .detour-badge {
-    align-self: flex-start;
-  }
-
-  .visual-timeline {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
 }
 
 .comparison-box {
@@ -707,11 +599,11 @@ body {
   flex-shrink: 0;
 }
 
-/* 互動式分段路況與路線可視化 Monitor */
 .route-visualizer {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
 
 .visual-timeline {
@@ -721,13 +613,16 @@ body {
   padding: 24px 10px;
   position: relative;
   scrollbar-width: thin;
+  width: 100%;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .timeline-node {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 100px;
+  min-width: 80px;
   position: relative;
   z-index: 2;
 }
@@ -763,7 +658,7 @@ body {
 
 .timeline-segment {
   flex: 1;
-  min-width: 90px;
+  min-width: 70px;
   height: 8px;
   border-radius: 4px;
   margin: 0 -10px;
@@ -784,11 +679,11 @@ body {
   white-space: nowrap;
 }
 
-/* 事故與施工警報 Feed (Incidents List) */
 .incidents-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
 }
 
 .incident-item {
@@ -847,7 +742,6 @@ body {
   color: var(--text-secondary);
 }
 
-/* 頁腳 Footer */
 .app-footer {
   text-align: center;
   padding: 24px 0;
@@ -855,4 +749,96 @@ body {
   font-size: 0.82rem;
   color: var(--text-muted);
   border-top: 1px solid var(--border-color);
+}
+
+/* ----------------------------------------------------
+ * 行動端 Media Queries (置於最底端，避免被後續樣式覆蓋)
+ * ---------------------------------------------------- */
+@media (max-width: 992px) {
+  .main-layout {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 8px 4px !important;
+  }
+
+  .container {
+    width: 100% !important;
+    padding: 0 4px !important;
+  }
+
+  .app-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 14px 12px !important;
+    gap: 10px !important;
+    text-align: center !important;
+  }
+
+  .brand {
+    justify-content: center !important;
+  }
+
+  .brand-icon {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 20px !important;
+  }
+
+  .brand-title h1 {
+    font-size: 1.05rem !important;
+    line-height: 1.3 !important;
+  }
+
+  .header-status {
+    width: 100% !important;
+  }
+
+  .refresh-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 10px !important;
+    font-size: 0.85rem !important;
+  }
+
+  .card {
+    padding: 14px 12px !important;
+    border-radius: 12px !important;
+  }
+
+  .summary-card {
+    padding: 12px !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  .stat-box {
+    padding: 8px !important;
+  }
+
+  .stat-value {
+    font-size: 1.05rem !important;
+  }
+
+  .comparison-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .detour-card {
+    padding: 14px 12px !important;
+  }
+
+  .detour-header {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .detour-badge {
+    align-self: flex-start !important;
+  }
 }
