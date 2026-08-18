@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>台灣國道1號與3號即時路況查詢 暨 改道路線建議系統</title>
+  <meta name="description" content="專為台灣駕駛設計之國道1號 (中山高) 與國道3號 (福爾摩沙高) 交流道極速即時路況查詢系統，包含塞車燈號、車禍事故、工程維護警報與最佳替代改道路線建議 (如台61西濱快速道路、台1線)。">
+  
+  <!-- iOS Mobile & PWA Web App Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="國道即時路況">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/192/highway-emoji.png">
+  
+  <!-- CSS Style -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 頁頭 Application Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">🛣️</div>
+        <div class="brand-title">
+          <h1>國道即時路況 & 替代改道查詢</h1>
+          <p>國道1號 (中山高) / 國道3號 (福高) · 交流道極速指南</p>
+        </div>
+      </div>
+
+      <div class="header-status">
+        <button id="refreshBtn" class="refresh-btn" title="手動更新即時路況數據">
+          <span class="refresh-icon">🔄</span>
+          <span>即時路況更新</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 主版面 Layout Grid -->
+    <main class="main-layout">
+      <!-- 左側：起終點選單與常用路線 -->
+      <aside class="sidebar">
+        <!-- 交流道選擇卡片 -->
+        <section class="card">
+          <h2 class="card-title">📍 選擇路線與起終點</h2>
+
+          <!-- 國道切換頁籤 -->
+          <div class="highway-tabs">
+            <button class="highway-tab active" data-hw="n1">
+              <span>國道1號</span>
+              <small>中山高速公路</small>
+            </button>
+            <button class="highway-tab" data-hw="n3">
+              <span>國道3號</span>
+              <small>福爾摩沙高速公路</small>
+            </button>
+          </div>
+
+          <!-- 縣市快速篩選 -->
+          <div class="form-group">
+            <label class="form-label">快速篩選縣市區劃：</label>
+            <div id="countyChips" class="county-filter">
+              <!-- JS 動態生成縣市晶片 -->
+            </div>
+          </div>
+
+          <!-- 起點交流道 -->
+          <div class="form-group">
+            <label for="startInterchange" class="form-label">🟢 起點交流道 (上國道地點)</label>
+            <div class="select-wrapper">
+              <select id="startInterchange" class="select-control">
+                <!-- JS 動態填充 -->
+              </select>
+            </div>
+          </div>
+
+          <!-- 起終點反轉按鈕 -->
+          <div class="swap-btn-container">
+            <button id="swapBtn" class="swap-btn" title="反轉起點與終點">⇅</button>
+          </div>
+
+          <!-- 終點交流道 -->
+          <div class="form-group">
+            <label for="endInterchange" class="form-label">🔴 終點交流道 (下國道地點)</label>
+            <div class="select-wrapper">
+              <select id="endInterchange" class="select-control">
+                <!-- JS 動態填充 -->
+              </select>
+            </div>
+          </div>
+
+          <!-- 查詢與加入書籤 -->
+          <div class="action-buttons">
+            <button id="queryBtn" class="primary-btn">🔍 查詢即時路況與改道</button>
+            <button id="bookmarkBtn" class="bookmark-btn" title="儲存為常用路線">⭐️</button>
+          </div>
+        </section>
+
+        <!-- 我的常用路線卡片 -->
+        <section class="card">
+          <h2 class="card-title">⭐ 我的常用路線快捷鍵</h2>
+          <div id="presetsList" class="presets-list">
+            <!-- JS 動態填充已儲存路線 -->
+          </div>
+        </section>
+      </aside>
+
+      <!-- 右側：路況概覽、改道建議、分段地圖與事故警報 -->
+      <section class="content-area">
+        <!-- 概覽摘要卡片 -->
+        <div id="summaryCard" class="summary-card">
+          <!-- JS 動態渲染摘要內容 -->
+        </div>
+
+        <!-- 智慧改道路線卡片 -->
+        <div id="detourCardContainer">
+          <!-- JS 動態渲染建議改道路線資訊 -->
+        </div>
+
+        <!-- 分段即時車速 Monitor -->
+        <div class="card">
+          <h2 class="card-title">📊 路線分段車速 Monitor</h2>
+          <div id="visualTimeline" class="visual-timeline">
+            <!-- JS 動態繪製節點與色彩車速條 -->
+          </div>
+        </div>
+
+        <!-- 即時事故與工程維護 Feed -->
+        <div class="card">
+          <h2 class="card-title">⚠️ 即時事故、掉落物與工程維護警報</h2>
+          <div id="incidentsList" class="incidents-list">
+            <!-- JS 動態渲染事故動態 -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 頁腳 Footer -->
+    <footer class="app-footer">
+      <p>國道即時路況查詢系統 · 支援 國道1號 (中山高) / 國道3號 (福高) · 提供即時車速燈號與替代改道評估</p>
+      <p>© 2026 Taiwan High Speed Freeway Traffic & Detour Helper</p>
+    </footer>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/data/interchanges.js"></script>
+  <script src="js/data/detourRules.js"></script>
+  <script src="js/trafficEngine.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

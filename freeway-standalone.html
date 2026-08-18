@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>台灣國道1號與3號即時路況查詢 暨 改道路線建議系統</title>
+  <meta name="description" content="專為台灣駕駛設計之國道1號 (中山高) 與國道3號 (福爾摩沙高) 交流道極速即時路況查詢系統。">
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="國道即時路況">
+  
+  <style>
+/* CSS Design System */
+:root {
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Arial, "Noto Sans TC", sans-serif;
+  --bg-dark: #0B0F19;
+  --bg-card: #151D2A;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --n1-color: #00A36C;
+  --n1-bg: rgba(0, 163, 108, 0.15);
+  --n3-color: #2563EB;
+  --n3-bg: rgba(37, 99, 235, 0.15);
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 16px;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(0, 163, 108, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+.container { max-width: 1280px; margin: 0 auto; }
+.app-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 24px; background: var(--bg-card); border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg); margin-bottom: 24px; box-shadow: var(--shadow-card);
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-icon {
+  width: 48px; height: 48px; background: linear-gradient(135deg, #00A36C 0%, #2563EB 100%);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px;
+}
+.brand-title h1 { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+.brand-title p { font-size: 0.85rem; color: var(--text-secondary); }
+.refresh-btn {
+  background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border-color);
+  color: var(--text-primary); padding: 10px 18px; border-radius: var(--radius-sm);
+  cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 500;
+}
+.main-layout { display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
+@media (max-width: 992px) { .main-layout { grid-template-columns: 1fr; } }
+.sidebar { display: flex; flex-direction: column; gap: 20px; }
+.card {
+  background: var(--bg-card); border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-card);
+}
+.card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+.highway-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.highway-tab {
+  padding: 14px; border-radius: var(--radius-md); background: rgba(255, 255, 255, 0.04);
+  border: 2px solid transparent; color: var(--text-secondary); cursor: pointer; text-align: center; font-weight: 700;
+}
+.highway-tab.active[data-hw="n1"] { background: var(--n1-bg); border-color: var(--n1-color); color: #34D399; }
+.highway-tab.active[data-hw="n3"] { background: var(--n3-bg); border-color: var(--n3-color); color: #60A5FA; }
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+.county-filter { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
+.county-chip {
+  padding: 4px 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color);
+  border-radius: 20px; font-size: 0.78rem; white-space: nowrap; cursor: pointer; color: var(--text-secondary);
+}
+.county-chip.active { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); border-color: rgba(255, 255, 255, 0.3); }
+.select-control {
+  width: 100%; padding: 12px 16px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.95rem; outline: none;
+}
+.swap-btn-container { display: flex; justify-content: center; margin: -6px 0 12px 0; }
+.swap-btn {
+  background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-primary);
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.action-buttons { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 10px; }
+.primary-btn {
+  background: linear-gradient(135deg, #00A36C 0%, #059669 100%); border: none; color: white;
+  padding: 14px; border-radius: var(--radius-sm); font-size: 1rem; font-weight: 700; cursor: pointer;
+}
+.bookmark-btn {
+  background: rgba(255, 215, 0, 0.12); border: 1px solid rgba(255, 215, 0, 0.3); color: #FBBF24;
+  padding: 0 16px; border-radius: var(--radius-sm); font-size: 1.1rem; cursor: pointer;
+}
+.preset-item {
+  display: flex; justify-content: space-between; align-items: center; padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 8px;
+}
+.preset-name { font-size: 0.9rem; font-weight: 700; }
+.preset-delete { background: none; border: none; color: var(--text-muted); cursor: pointer; }
+.content-area { display: flex; flex-direction: column; gap: 24px; }
+.summary-card {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px;
+  background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 24px;
+}
+.stat-box { display: flex; flex-direction: column; padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-md); }
+.stat-label { font-size: 0.8rem; color: var(--text-secondary); }
+.stat-value { font-size: 1.4rem; font-weight: 800; color: var(--text-primary); }
+.stat-unit { font-size: 0.8rem; font-weight: 400; color: var(--text-muted); }
+.status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; }
+.detour-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.4); border-radius: var(--radius-lg); padding: 24px;
+}
+.detour-card.smooth-route { border-color: rgba(16, 185, 129, 0.3); }
+.detour-header { display: flex; justify-content: space-between; margin-bottom: 16px; }
+.detour-badge { background: rgba(245, 158, 11, 0.2); color: #FBBF24; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; }
+.detour-badge.no-detour { background: rgba(16, 185, 129, 0.2); color: #34D399; }
+.detour-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
+.comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.comparison-box { padding: 16px; border-radius: var(--radius-md); background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); }
+.comparison-box.alt-box { border-color: rgba(245, 158, 11, 0.5); background: rgba(245, 158, 11, 0.08); }
+.turn-instructions { background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-md); padding: 16px; }
+.instruction-step { display: flex; gap: 12px; margin-bottom: 10px; font-size: 0.88rem; }
+.step-num { background: rgba(255, 255, 255, 0.1); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+.visual-timeline { display: flex; align-items: center; overflow-x: auto; padding: 24px 10px; }
+.timeline-node { display: flex; flex-direction: column; align-items: center; min-width: 100px; }
+.node-dot { width: 18px; height: 18px; border-radius: 50%; background: #334155; border: 3px solid var(--bg-card); }
+.node-dot.endpoint { background: #34D399; width: 22px; height: 22px; }
+.node-name { font-size: 0.85rem; font-weight: 700; margin-top: 8px; white-space: nowrap; }
+.node-km { font-size: 0.75rem; color: var(--text-muted); }
+.timeline-segment { flex: 1; min-width: 90px; height: 8px; border-radius: 4px; margin: 0 -10px; position: relative; top: -18px; display: flex; align-items: center; justify-content: center; }
+.segment-speed-tag { background: rgba(0, 0, 0, 0.8); padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+.incidents-list { display: flex; flex-direction: column; gap: 12px; }
+.incident-item { display: flex; gap: 14px; padding: 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: var(--radius-md); }
+.incident-icon { font-size: 1.5rem; padding: 8px; background: rgba(255, 255, 255, 0.05); border-radius: var(--radius-sm); }
+.incident-header-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.app-footer { text-align: center; padding: 24px 0; margin-top: 30px; font-size: 0.82rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">🛣️</div>
+        <div class="brand-title">
+          <h1>國道即時路況 & 替代改道查詢</h1>
+          <p>國道1號 (中山高) / 國道3號 (福高) · 交流道極速指南</p>
+        </div>
+      </div>
+      <div class="header-status">
+        <button id="refreshBtn" class="refresh-btn">
+          <span class="refresh-icon">🔄</span>
+          <span>即時路況更新</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="main-layout">
+      <aside class="sidebar">
+        <section class="card">
+          <h2 class="card-title">📍 選擇路線與起終點</h2>
+          <div class="highway-tabs">
+            <button class="highway-tab active" data-hw="n1">
+              <span>國道1號</span>
+              <small>中山高</small>
+            </button>
+            <button class="highway-tab" data-hw="n3">
+              <span>國道3號</span>
+              <small>福高</small>
+            </button>
+          </div>
+          <div class="form-group">
+            <label class="form-label">快速篩選縣市區劃：</label>
+            <div id="countyChips" class="county-filter"></div>
+          </div>
+          <div class="form-group">
+            <label for="startInterchange" class="form-label">🟢 起點交流道 (上國道)</label>
+            <select id="startInterchange" class="select-control"></select>
+          </div>
+          <div class="swap-btn-container">
+            <button id="swapBtn" class="swap-btn" title="反轉起終點">⇅</button>
+          </div>
+          <div class="form-group">
+            <label for="endInterchange" class="form-label">🔴 終點交流道 (下國道)</label>
+            <select id="endInterchange" class="select-control"></select>
+          </div>
+          <div class="action-buttons">
+            <button id="queryBtn" class="primary-btn">🔍 查詢即時路況與改道</button>
+            <button id="bookmarkBtn" class="bookmark-btn">⭐️</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="card-title">⭐ 我的常用路線快捷鍵</h2>
+          <div id="presetsList" class="presets-list"></div>
+        </section>
+      </aside>
+
+      <section class="content-area">
+        <div id="summaryCard" class="summary-card"></div>
+        <div id="detourCardContainer"></div>
+        <div class="card">
+          <h2 class="card-title">📊 路線分段車速 Monitor</h2>
+          <div id="visualTimeline" class="visual-timeline"></div>
+        </div>
+        <div class="card">
+          <h2 class="card-title">⚠️ 即時事故與工程維護警報</h2>
+          <div id="incidentsList" class="incidents-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>國道即時路況查詢系統 · 支援 國1 / 國3 交流道極速指南</p>
+    </footer>
+  </div>
+
+  <script>
+// Bundled Interchanges & Engine Script
+const HIGHWAY_DATA = {
+  n1: {
+    id: 'n1', name: '國道1號 (中山高速公路)', shortName: '國1 中山高',
+    counties: ['基隆市', '新北市', '台北市', '桃園市', '新竹縣', '新竹市', '苗栗縣', '台中市', '彰化縣', '雲林縣', '嘉義縣', '嘉義市', '台南市', '高雄市'],
+    interchanges: [
+      { id: 'n1_0', name: '基隆端', km: 0.0, county: '基隆市' },
+      { id: 'n1_2', name: '八堵交流道', km: 2.6, county: '基隆市' },
+      { id: 'n1_5', name: '大華系統交流道', km: 5.0, county: '基隆市' },
+      { id: 'n1_7', name: '五堵交流道', km: 7.0, county: '基隆市' },
+      { id: 'n1_10', name: '汐止交流道', km: 10.5, county: '新北市' },
+      { id: 'n1_11', name: '汐止系統交流道', km: 11.5, county: '新北市' },
+      { id: 'n1_15', name: '東湖交流道', km: 15.2, county: '台北市' },
+      { id: 'n1_17', name: '內湖交流道', km: 16.8, county: '台北市' },
+      { id: 'n1_23', name: '圓山交流道', km: 23.2, county: '台北市' },
+      { id: 'n1_25', name: '台北交流道 (重慶北路)', km: 25.1, county: '台北市' },
+      { id: 'n1_27', name: '三重交流道', km: 27.1, county: '新北市' },
+      { id: 'n1_33', name: '五股交流道', km: 33.1, county: '新北市' },
+      { id: 'n1_41', name: '林口交流道', km: 41.4, county: '新北市' },
+      { id: 'n1_49', name: '桃園交流道 (南崁)', km: 49.1, county: '桃園市' },
+      { id: 'n1_52', name: '機場系統交流道', km: 52.5, county: '桃園市' },
+      { id: 'n1_57', name: '內壢交流道', km: 57.0, county: '桃園市' },
+      { id: 'n1_62', name: '中壢交流道', km: 62.4, county: '桃園市' },
+      { id: 'n1_65', name: '平鎮系統交流道', km: 65.4, county: '桃園市' },
+      { id: 'n1_69', name: '楊梅交流道', km: 69.2, county: '桃園市' },
+      { id: 'n1_83', name: '湖口交流道', km: 83.8, county: '新竹縣' },
+      { id: 'n1_91', name: '竹北交流道', km: 91.0, county: '新竹縣' },
+      { id: 'n1_95', name: '新竹交流道', km: 95.4, county: '新竹市' },
+      { id: 'n1_99', name: '新竹系統交流道', km: 99.4, county: '新竹市' },
+      { id: 'n1_110', name: '頭份交流道', km: 110.4, county: '苗栗縣' },
+      { id: 'n1_125', name: '頭屋交流道', km: 125.4, county: '苗栗縣' },
+      { id: 'n1_132', name: '苗栗交流道', km: 132.8, county: '苗栗縣' },
+      { id: 'n1_150', name: '三義交流道', km: 150.2, county: '苗栗縣' },
+      { id: 'n1_160', name: '后里交流道', km: 160.6, county: '台中市' },
+      { id: 'n1_165', name: '台中系統交流道', km: 165.5, county: '台中市' },
+      { id: 'n1_174', name: '大雅交流道', km: 174.2, county: '台中市' },
+      { id: 'n1_178', name: '台中交流道 (台灣大道)', km: 178.6, county: '台中市' },
+      { id: 'n1_181', name: '南屯交流道', km: 181.4, county: '台中市' },
+      { id: 'n1_192', name: '彰化系統交流道', km: 192.8, county: '彰化縣' },
+      { id: 'n1_198', name: '彰化交流道', km: 198.4, county: '彰化縣' },
+      { id: 'n1_207', name: '埔鹽系統交流道', km: 207.7, county: '彰化縣' },
+      { id: 'n1_211', name: '員林交流道', km: 211.0, county: '彰化縣' },
+      { id: 'n1_230', name: '西螺交流道', km: 230.5, county: '雲林縣' },
+      { id: 'n1_243', name: '雲林系統交流道', km: 243.8, county: '雲林縣' },
+      { id: 'n1_264', name: '嘉義交流道', km: 264.8, county: '嘉義市' },
+      { id: 'n1_272', name: '嘉義系統交流道', km: 272.9, county: '嘉義縣' },
+      { id: 'n1_288', name: '新營交流道', km: 288.4, county: '台南市' },
+      { id: 'n1_315', name: '台南系統交流道', km: 315.5, county: '台南市' },
+      { id: 'n1_327', name: '仁德交流道', km: 327.4, county: '台南市' },
+      { id: 'n1_330', name: '仁德系統交流道', km: 330.4, county: '台南市' },
+      { id: 'n1_346', name: '高雄系統交流道', km: 346.7, county: '高雄市' },
+      { id: 'n1_362', name: '鼎金系統交流道', km: 362.4, county: '高雄市' },
+      { id: 'n1_367', name: '高雄交流道', km: 367.4, county: '高雄市' },
+      { id: 'n1_373', name: '高雄端', km: 373.4, county: '高雄市' }
+    ]
+  },
+  n3: {
+    id: 'n3', name: '國道3號 (福爾摩沙高速公路)', shortName: '國3 福高',
+    counties: ['基隆市', '新北市', '台北市', '桃園市', '新竹縣', '新竹市', '苗栗縣', '台中市', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '台南市', '高雄市', '屏東縣'],
+    interchanges: [
+      { id: 'n3_0', name: '基金交流道', km: 0.0, county: '基隆市' },
+      { id: 'n3_10', name: '汐止系統交流道', km: 10.9, county: '新北市' },
+      { id: 'n3_15', name: '南港交流道', km: 15.1, county: '台北市' },
+      { id: 'n3_20', name: '木柵交流道', km: 20.8, county: '台北市' },
+      { id: 'n3_26', name: '新店交流道', km: 26.8, county: '新北市' },
+      { id: 'n3_35', name: '中和交流道', km: 35.8, county: '新北市' },
+      { id: 'n3_42', name: '土城交流道', km: 42.8, county: '新北市' },
+      { id: 'n3_50', name: '三峽交流道', km: 50.6, county: '新北市' },
+      { id: 'n3_62', name: '大溪交流道', km: 62.7, county: '桃園市' },
+      { id: 'n3_68', name: '龍潭交流道', km: 68.3, county: '桃園市' },
+      { id: 'n3_79', name: '關西交流道', km: 79.3, county: '新竹縣' },
+      { id: 'n3_90', name: '竹林交流道', km: 90.3, county: '新竹縣' },
+      { id: 'n3_100', name: '新竹系統交流道', km: 100.8, county: '新竹縣' },
+      { id: 'n3_109', name: '香山交流道', km: 109.2, county: '新竹市' },
+      { id: 'n3_115', name: '西濱交流道', km: 115.2, county: '苗栗縣' },
+      { id: 'n3_130', name: '後龍交流道', km: 130.6, county: '苗栗縣' },
+      { id: 'n3_164', name: '大甲交流道', km: 164.2, county: '台中市' },
+      { id: 'n3_176', name: '沙鹿交流道', km: 176.1, county: '台中市' },
+      { id: 'n3_196', name: '彰化系統交流道', km: 196.8, county: '彰化縣' },
+      { id: 'n3_202', name: '快官交流道', km: 202.1, county: '彰化縣' },
+      { id: 'n3_209', name: '中投交流道', km: 209.0, county: '台中市' },
+      { id: 'n3_211', name: '霧峰交流道', km: 211.3, county: '台中市' },
+      { id: 'n3_217', name: '草屯交流道', km: 217.4, county: '南投縣' },
+      { id: 'n3_228', name: '南投交流道', km: 228.3, county: '南投縣' },
+      { id: 'n3_237', name: '名間交流道', km: 237.0, county: '南投縣' },
+      { id: 'n3_260', name: '斗六交流道', km: 260.7, county: '雲林縣' },
+      { id: 'n3_297', name: '中埔交流道', km: 297.4, county: '嘉義縣' },
+      { id: 'n3_334', name: '官田系統交流道', km: 334.9, county: '台南市' },
+      { id: 'n3_357', name: '關廟交流道', km: 357.0, county: '台南市' },
+      { id: 'n3_383', name: '燕巢系統交流道', km: 383.5, county: '高雄市' },
+      { id: 'n3_391', name: '九如交流道', km: 391.6, county: '屏東縣' },
+      { id: 'n3_415', name: '竹田系統交流道', km: 415.2, county: '屏東縣' },
+      { id: 'n3_431', name: '大鵬灣端', km: 431.5, county: '屏東縣' }
+    ]
+  }
+};
+
+const DETOUR_DATABASE = [
+  {
+    id: 'detour_north_61', highwayId: 'n1', name: '台北-新竹/苗栗段 避開國1壅塞改走台61西濱快速道路',
+    startKm: 33.0, endKm: 110.0, alternateRouteName: '台61線 西濱快速道路 (八里 ➔ 香山 ➔ 竹南)',
+    offRampInstruction: '從五股交流道改接台64線快速道路（八里方向），隨後轉入台61線西濱快速道路南下。',
+    onRampInstruction: '於台61線香山/竹南匝道駛離，依指標轉台1己線或縣道124線重新接回國道1號頭份/竹北交流道。',
+    baseSpeed: 75
+  },
+  {
+    id: 'detour_general_line1', highwayId: 'n1', name: '短程區域替代：改走台1線 (省道中山路)',
+    startKm: 0.0, endKm: 373.0, alternateRouteName: '省道 台1線 (中山路)',
+    offRampInstruction: '於前方最新交流道立刻駛離國道，跟隨「台1線」省道標誌行駛。',
+    onRampInstruction: '通過事故/嚴重壅塞路段後，於下一個交流道重新進入國道。',
+    baseSpeed: 50
+  }
+];
+
+class TrafficEngine {
+  constructor() { this.generateMockIncidents(); }
+  generateMockIncidents() {
+    this.incidentsSeed = [
+      { id: '1', highwayId: 'n1', km: 42.5, type: 'accident', title: '小客車追撞事故', severity: 'high', speedDrop: 45, icon: '💥', desc: '占用內側車道，警方已抵達處理中。', locationName: '國道1號 南向 42.5K', timestamp: '即時' },
+      { id: '2', highwayId: 'n3', km: 78.0, type: 'construction', title: '路面修補施工', severity: 'medium', speedDrop: 25, icon: '🚧', desc: '占用外側路肩，請減速慢行。', locationName: '國道3號 北向 78.0K', timestamp: '即時' }
+    ];
+  }
+  evaluateRoute(highwayId, startId, endId) {
+    const hw = HIGHWAY_DATA[highwayId];
+    const startIndex = hw.interchanges.findIndex(i => i.id === startId);
+    const endIndex = hw.interchanges.findIndex(i => i.id === endId);
+    if (startIndex === -1 || endIndex === -1) return null;
+
+    const isSouthbound = startIndex < endIndex;
+    const step = isSouthbound ? 1 : -1;
+    const routeNodes = [];
+    for (let i = startIndex; isSouthbound ? i <= endIndex : i >= endIndex; i += step) {
+      routeNodes.push(hw.interchanges[i]);
+    }
+
+    const startKm = hw.interchanges[startIndex].km;
+    const endKm = hw.interchanges[endIndex].km;
+    const totalDist = Math.abs(endKm - startKm);
+    const minKm = Math.min(startKm, endKm);
+    const maxKm = Math.max(startKm, endKm);
+
+    const activeInc = this.incidentsSeed.filter(inc => inc.highwayId === highwayId && inc.km >= minKm && inc.km <= maxKm);
+
+    const segments = [];
+    let totalMins = 0;
+    let worstSpeed = 110;
+
+    for (let i = 0; i < routeNodes.length - 1; i++) {
+      const from = routeNodes[i];
+      const to = routeNodes[i + 1];
+      const segDist = Math.abs(to.km - from.km);
+      let speed = 90;
+      if (from.name.includes('林口') || from.name.includes('湖口') || from.name.includes('中和')) speed -= 25;
+      activeInc.forEach(inc => speed -= inc.speedDrop);
+      speed = Math.max(20, Math.min(110, speed));
+      if (speed < worstSpeed) worstSpeed = speed;
+      const travelMins = Math.round((segDist / speed) * 60);
+      totalMins += travelMins;
+      segments.push({ from, to, distance: Math.round(segDist*10)/10, speed, travelMins, status: this.getStatus(speed), incidents: activeInc });
+    }
+
+    const avgSpeed = Math.round(worstSpeed * 1.1);
+    const rule = DETOUR_DATABASE[0];
+    const detourMins = Math.round((totalDist * 1.1 / rule.baseSpeed) * 60);
+
+    return {
+      highway: hw, start: hw.interchanges[startIndex], end: hw.interchanges[endIndex],
+      directionName: isSouthbound ? '南下' : '北上', totalDistance: Math.round(totalDist*10)/10,
+      totalTravelMinutes: Math.max(1, totalMins), averageSpeed: avgSpeed, worstSpeed, overallStatus: this.getStatus(avgSpeed),
+      segments, incidents: activeInc,
+      detourAdvice: {
+        recommended: worstSpeed < 50 || activeInc.length > 0, rule, detourTravelMins: detourMins,
+        minutesSaved: totalMins - detourMins, reason: activeInc.length > 0 ? '目前發生事故壅塞，建議改道。' : '車流順暢，原國道最快。'
+      }
+    };
+  }
+  getStatus(speed) {
+    if (speed >= 80) return { label: '順暢', color: '#10B981', bg: 'rgba(16,185,129,0.15)', icon: '🟢' };
+    if (speed >= 60) return { label: '車多', color: '#84CC16', bg: 'rgba(132,204,22,0.15)', icon: '🟡' };
+    if (speed >= 40) return { label: '壅塞', color: '#F59E0B', bg: 'rgba(245,158,11,0.15)', icon: '🟠' };
+    return { label: '嚴重要塞', color: '#EF4444', bg: 'rgba(239,68,68,0.2)', icon: '🔴' };
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const engine = new TrafficEngine();
+  let currentHw = 'n1';
+  let savedPresets = JSON.parse(localStorage.getItem('freeway_saved_presets') || '[]');
+
+  const startSel = document.getElementById('startInterchange');
+  const endSel = document.getElementById('endInterchange');
+  const swapBtn = document.getElementById('swapBtn');
+  const queryBtn = document.getElementById('queryBtn');
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  const refreshBtn = document.getElementById('refreshBtn');
+
+  function populateSelects() {
+    const hw = HIGHWAY_DATA[currentHw];
+    startSel.innerHTML = ''; endSel.innerHTML = '';
+    hw.interchanges.forEach(item => {
+      startSel.appendChild(new Option(`${item.km}K ${item.name} (${item.county})`, item.id));
+      endSel.appendChild(new Option(`${item.km}K ${item.name} (${item.county})`, item.id));
+    });
+  }
+
+  function query() {
+    const res = engine.evaluateRoute(currentHw, startSel.value, endSel.value);
+    if (!res) return;
+    document.getElementById('summaryCard').innerHTML = `
+      <div class="stat-box"><span class="stat-label">路段</span><span class="stat-value" style="font-size:1.1rem;">${res.start.name} ➔ ${res.end.name}</span><span class="stat-unit">${res.directionName} · ${res.totalDistance} km</span></div>
+      <div class="stat-box"><span class="stat-label">平均時速</span><span class="stat-value" style="color:${res.overallStatus.color};">${res.averageSpeed} <span class="stat-unit">km/h</span></span></div>
+      <div class="stat-box"><span class="stat-label">預估時間</span><span class="stat-value">${res.totalTravelMinutes} <span class="stat-unit">分鐘</span></span></div>
+      <div class="stat-box"><span class="stat-label">狀況</span><div class="status-badge" style="background:${res.overallStatus.bg}; color:${res.overallStatus.color};">${res.overallStatus.icon} ${res.overallStatus.label}</div></div>
+    `;
+
+    const d = res.detourAdvice;
+    document.getElementById('detourCardContainer').innerHTML = d.recommended ? `
+      <div class="detour-card">
+        <div class="detour-header"><div><div class="detour-title">⚠️ 建議改道路線</div><div style="font-size:0.9rem; color:#CBD5E1;">${d.reason}</div></div><div class="detour-badge">🛣️ 建議改道</div></div>
+        <div class="comparison-grid">
+          <div class="comparison-box"><div style="font-size:0.8rem; color:#94A3B8;">🚗 原國道</div><div style="font-size:1.3rem; font-weight:800;">${res.totalTravelMinutes} 分鐘</div></div>
+          <div class="comparison-box alt-box"><div style="font-size:0.8rem; color:#FBBF24;">🛣️ ${d.rule.alternateRouteName}</div><div style="font-size:1.3rem; font-weight:800; color:#FBBF24;">預估 ${d.detourTravelMins} 分鐘</div></div>
+        </div>
+        <div class="turn-instructions"><div class="instruction-step"><span class="step-num">1</span><div><strong>切換指引：</strong>${d.rule.offRampInstruction}</div></div></div>
+      </div>
+    ` : `<div class="detour-card smooth-route"><div class="detour-title">🟢 路況順暢，行駛原國道最快！</div></div>`;
+  }
+
+  document.querySelectorAll('.highway-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.highway-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active'); currentHw = tab.dataset.hw;
+      populateSelects(); query();
+    });
+  });
+
+  swapBtn.addEventListener('click', () => {
+    const t = startSel.value; startSel.value = endSel.value; endSel.value = t; query();
+  });
+  queryBtn.addEventListener('click', query);
+  refreshBtn.addEventListener('click', () => { engine.generateMockIncidents(); query(); });
+
+  populateSelects(); query();
+});
+  </script>
+</body>
+</html>
