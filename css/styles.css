@@ -535,9 +535,86 @@ body {
   margin-bottom: 20px;
 }
 
-@media (max-width: 600px) {
+/* 響應式裝置行動端極致優化 Media Queries */
+@media (max-width: 992px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 10px 8px;
+  }
+
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .brand {
+    justify-content: center;
+  }
+
+  .brand-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
+
+  .brand-title h1 {
+    font-size: 1.15rem;
+  }
+
+  .header-status {
+    width: 100%;
+  }
+
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .summary-card {
+    padding: 16px;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat-box {
+    padding: 10px;
+  }
+
+  .stat-value {
+    font-size: 1.15rem;
+  }
+
   .comparison-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .detour-card {
+    padding: 16px;
+  }
+
+  .detour-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .detour-badge {
+    align-self: flex-start;
   }
 }
 
