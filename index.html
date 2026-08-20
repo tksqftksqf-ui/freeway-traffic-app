@@ -8,13 +8,8 @@
   
   <!-- iOS Mobile & PWA Web App Support -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="國道即時路況">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/192/highway-emoji.png">
-  
-  <!-- CSS Style -->
-  <link rel="stylesheet" href="css/styles.css">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucen  <!-- CSS Style -->
+  <link rel="stylesheet" href="css/styles.css?v=2.3">
 </head>
 <body>
   <div class="container">
@@ -23,7 +18,7 @@
       <div class="brand">
         <div class="brand-icon">🛣️</div>
         <div class="brand-title">
-          <h1>國道即時路況 & 替代改道查詢 <span style="font-size: 0.7rem; background: rgba(52, 211, 153, 0.2); color: #34D399; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(52, 211, 153, 0.4); margin-left: 6px; vertical-align: middle;">v2.2 台88線點擊修復 🛠️</span></h1>
+          <h1>國道即時路況 & 替代改道查詢 <span style="font-size: 0.7rem; background: rgba(52, 211, 153, 0.2); color: #34D399; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(52, 211, 153, 0.4); margin-left: 6px; vertical-align: middle;">v2.3 電腦/手機全面修復 💻📱</span></h1>
           <p>國道1號 (中山高) / 國道3號 (福高) / 台88線 快速道路 極速指南</p>
         </div>
       </div>
@@ -129,6 +124,35 @@
           </div>
         </div>
 
+        <!-- 即時事故與工程維護警報 -->
+        <div class="card">
+          <h2 class="card-title">⚠️ 即時事故、掉落物與工程維護警報</h2>
+          <div id="incidentsList" class="incidents-list">
+            <!-- JS 動態渲染事故動態 -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 頁腳 Footer -->
+    <footer class="app-footer">
+      <p>國道即時路況查詢系統 · 支援 國道1號 (中山高) / 國道3號 (福高) / 台88線 快速道路 · 提供即時車速燈號與替代改道評估</p>
+      <p>© 2026 Taiwan High Speed Freeway Traffic & Detour Helper</p>
+    </footer>
+  </div>
+
+  <!-- JavaScript Modules with Cache Busters -->
+  <script src="js/data/interchanges.js?v=2.3"></script>
+  <script src="js/data/detourRules.js?v=2.3"></script>
+  <script src="js/trafficEngine.js?v=2.3"></script>
+  <script src="js/app.js?v=2.3"></script>
+</body>
+</html>�段車速 Monitor</h2>
+          <div id="visualTimeline" class="visual-timeline">
+            <!-- JS 動態繪製節點與色彩車速條 -->
+          </div>
+        </div>
+
         <!-- 即時事故與工程維護 Feed -->
         <div class="card">
           <h2 class="card-title">⚠️ 即時事故、掉落物與工程維護警報</h2>
@@ -147,9 +171,9 @@
   </div>
 
   <!-- JavaScript Modules -->
-  <script src="js/data/interchanges.js"></script>
-  <script src="js/data/detourRules.js"></script>
-  <script src="js/trafficEngine.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/data/interchanges.js?v=2.3"></script>
+  <script src="js/data/detourRules.js?v=2.3"></script>
+  <script src="js/trafficEngine.js?v=2.3"></script>
+  <script src="js/app.js?v=2.3"></script>
 </body>
 </html>
