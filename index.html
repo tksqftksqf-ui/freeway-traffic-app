@@ -23,7 +23,7 @@
       <div class="brand">
         <div class="brand-icon">🛣️</div>
         <div class="brand-title">
-          <h1>國道即時路況 & 替代改道查詢 <span style="font-size: 0.7rem; background: rgba(52, 211, 153, 0.2); color: #34D399; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(52, 211, 153, 0.4); margin-left: 6px; vertical-align: middle;">v2.0 支援台88線快速道路 🛣️</span></h1>
+          <h1>國道即時路況 & 替代改道查詢 <span style="font-size: 0.7rem; background: rgba(52, 211, 153, 0.2); color: #34D399; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(52, 211, 153, 0.4); margin-left: 6px; vertical-align: middle;">v2.1 常用路線置頂版 ⭐</span></h1>
           <p>國道1號 (中山高) / 國道3號 (福高) / 台88線 快速道路 極速指南</p>
         </div>
       </div>
@@ -40,6 +40,14 @@
     <main class="main-layout">
       <!-- 左側：起終點選單與常用路線 -->
       <aside class="sidebar">
+        <!-- 我的常用路線卡片 (置頂方便取用) -->
+        <section class="card">
+          <h2 class="card-title">⭐ 我的常用路線快捷鍵</h2>
+          <div id="presetsList" class="presets-list">
+            <!-- JS 動態填充已儲存路線 -->
+          </div>
+        </section>
+
         <!-- 交流道選擇卡片 -->
         <section class="card">
           <h2 class="card-title">📍 選擇路線與起終點</h2>
@@ -97,14 +105,6 @@
           <div class="action-buttons">
             <button id="queryBtn" class="primary-btn">🔍 查詢即時路況與改道</button>
             <button id="bookmarkBtn" class="bookmark-btn" title="儲存為常用路線">⭐️</button>
-          </div>
-        </section>
-
-        <!-- 我的常用路線卡片 -->
-        <section class="card">
-          <h2 class="card-title">⭐ 我的常用路線快捷鍵</h2>
-          <div id="presetsList" class="presets-list">
-            <!-- JS 動態填充已儲存路線 -->
           </div>
         </section>
       </aside>
