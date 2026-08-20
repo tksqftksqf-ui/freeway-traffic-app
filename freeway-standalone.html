@@ -178,8 +178,8 @@ body {
       <div class="brand">
         <div class="brand-icon">🛣️</div>
         <div class="brand-title">
-          <h1>國道即時路況 & 替代改道查詢 <span style="font-size: 0.7rem; background: rgba(52, 211, 153, 0.2); color: #34D399; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(52, 211, 153, 0.4); margin-left: 6px; vertical-align: middle;">v1.3 手機滿版修復</span></h1>
-          <p>國道1號 (中山高) / 國道3號 (福高) · 交流道極速指南</p>
+          <h1>國道即時路況 & 替代改道查詢 <span style="font-size: 0.7rem; background: rgba(52, 211, 153, 0.2); color: #34D399; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(52, 211, 153, 0.4); margin-left: 6px; vertical-align: middle;">v2.0 支援台88線快速道路 🛣️</span></h1>
+          <p>國道1號 (中山高) / 國道3號 (福高) / 台88線 快速道路 極速指南</p>
         </div>
       </div>
       <div class="header-status">
@@ -202,6 +202,10 @@ body {
             <button class="highway-tab" data-hw="n3">
               <span>國道3號</span>
               <small>福高</small>
+            </button>
+            <button class="highway-tab" data-hw="e88">
+              <span>台88線</span>
+              <small>高雄-潮州</small>
             </button>
           </div>
           <div class="form-group">
@@ -343,6 +347,19 @@ const HIGHWAY_DATA = {
       { id: 'n3_391', name: '九如交流道', km: 391.6, county: '屏東縣' },
       { id: 'n3_415', name: '竹田系統交流道', km: 415.2, county: '屏東縣' },
       { id: 'n3_431', name: '大鵬灣端', km: 431.5, county: '屏東縣' }
+    ]
+  },
+  e88: {
+    id: 'e88', name: '台88線 (高雄-潮州快速道路)', shortName: '台88 快速道路',
+    counties: ['高雄市', '屏東縣'],
+    interchanges: [
+      { id: 'e88_0', name: '五甲系統交流道', km: 0.0, county: '高雄市' },
+      { id: 'e88_2', name: '鳳山交流道', km: 2.2, county: '高雄市' },
+      { id: 'e88_7', name: '大寮交流道', km: 7.0, county: '高雄市' },
+      { id: 'e88_9', name: '大發交流道', km: 9.6, county: '高雄市' },
+      { id: 'e88_15', name: '萬丹交流道', km: 15.6, county: '屏東縣' },
+      { id: 'e88_21', name: '竹田系統交流道', km: 21.2, county: '屏東縣' },
+      { id: 'e88_22', name: '竹田端', km: 22.3, county: '屏東縣' }
     ]
   }
 };

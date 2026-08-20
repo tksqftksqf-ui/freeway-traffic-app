@@ -153,5 +153,22 @@ const HIGHWAY_DATA = {
       { id: 'n3_424', name: '林邊交流道', km: 424.5, county: '屏東縣', cityDistrict: '林邊鄉', connects: '台17線 (中山路)' },
       { id: 'n3_431', name: '大鵬灣端', km: 431.5, county: '屏東縣', cityDistrict: '東港鎮', connects: '大鵬灣環灣道路' }
     ]
+  },
+  e88: {
+    id: 'e88',
+    name: '台88線 (高雄-潮州快速道路)',
+    shortName: '台88 快速道路',
+    badgeColor: '#D97706',
+    totalLength: 22.3,
+    counties: ['高雄市', '屏東縣'],
+    interchanges: [
+      { id: 'e88_0', name: '五甲系統交流道', km: 0.0, county: '高雄市', cityDistrict: '鳳山區', connects: '國道1號 (372K 五甲系統)' },
+      { id: 'e88_2', name: '鳳山交流道', km: 2.2, county: '高雄市', cityDistrict: '鳳山區', connects: '台1戊線 / 市道188號 / 鳳頂路' },
+      { id: 'e88_7', name: '大寮交流道', km: 7.0, county: '高雄市', cityDistrict: '大寮區', connects: '台25線 (鳳林路) / 市道188號' },
+      { id: 'e88_9', name: '大發交流道', km: 9.6, county: '高雄市', cityDistrict: '大寮區', connects: '華中路 / 大發工業區' },
+      { id: 'e88_15', name: '萬丹交流道', km: 15.6, county: '屏東縣', cityDistrict: '萬丹鄉', connects: '台27線 (丹榮路)' },
+      { id: 'e88_21', name: '竹田系統交流道', km: 21.2, county: '屏東縣', cityDistrict: '竹田鄉', connects: '國道3號 (415K 竹田系統)' },
+      { id: 'e88_22', name: '竹田端', km: 22.3, county: '屏東縣', cityDistrict: '竹田鄉', connects: '台1線 (屏鵝公路) / 市道188號' }
+    ]
   }
 };

@@ -79,6 +79,21 @@ const DETOUR_DATABASE = [
     tags: ['南部', '雲嘉南替代', '西濱全線暢通']
   },
   {
+    id: 'detour_e88_line188',
+    highwayId: 'e88',
+    name: '台88線 壅塞改走 市道188號 (台88平面橋下道路)',
+    startKm: 0.0,
+    endKm: 22.3,
+    description: '台88線高架段（鳳山-大寮-萬丹-竹田）若遇車禍或施工停滯，可立即下交流道改走市道188號平面道路。',
+    alternateRouteName: '市道188號 (台88線橋下平面道路)',
+    offRampInstruction: '於前方交流道（鳳山/大寮/萬丹）駛離台88線高架，直接市道188號平面道路。',
+    onRampInstruction: '順行市道188號避開高架事故段後，於下一匝道重新匯入台88線或國道3號竹田系統。',
+    timeMultiplier: 1.25,
+    baseSpeed: 55,
+    distanceKm: 22.0,
+    tags: ['高雄屏東', '台88橋下', '市道188號']
+  },
+  {
     id: 'detour_general_line1',
     highwayId: 'n1',
     name: '短程區域替代：改走台1線 (省道中山路)',

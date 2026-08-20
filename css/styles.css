@@ -190,13 +190,13 @@ body {
 
 .highway-tabs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
   margin-bottom: 20px;
 }
 
 .highway-tab {
-  padding: 14px;
+  padding: 12px 6px;
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.04);
   border: 2px solid transparent;
@@ -204,7 +204,7 @@ body {
   cursor: pointer;
   text-align: center;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: var(--transition-fast);
   display: flex;
   flex-direction: column;
@@ -213,7 +213,7 @@ body {
 }
 
 .highway-tab small {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 400;
   opacity: 0.8;
 }
@@ -228,6 +228,12 @@ body {
   background: var(--n3-bg);
   border-color: var(--n3-color);
   color: #60A5FA;
+}
+
+.highway-tab.active[data-hw="e88"] {
+  background: rgba(217, 119, 6, 0.18);
+  border-color: #D97706;
+  color: #FBBF24;
 }
 
 .form-group {
@@ -831,8 +837,8 @@ body {
 
   .highway-tabs {
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 6px !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 4px !important;
     width: 100% !important;
     min-width: 0 !important;
   }

@@ -24,10 +24,12 @@ class TrafficEngine {
 
     const newIncidents = [];
 
-    // 國道1號事故生成 (3-5個點)
+    // 國道1號事故生成 (3個點)
     const n1KmPoints = [15.2, 42.5, 65.0, 95.8, 175.0, 198.0, 242.0, 315.0, 362.0];
-    // 國道3號事故生成 (3-5個點)
+    // 國道3號事故生成 (3個點)
     const n3KmPoints = [26.0, 43.5, 78.0, 100.5, 169.0, 211.0, 269.0, 346.0, 391.0];
+    // 台88線事故生成 (2個點)
+    const e88KmPoints = [2.2, 7.0, 9.6, 15.6, 21.2];
 
     // 為國1隨機選取 3 個事故
     this.shuffle(n1KmPoints).slice(0, 3).forEach(km => {
@@ -69,6 +71,26 @@ class TrafficEngine {
       });
     });
 
+    // 為台88線隨機選取 2 個事故
+    this.shuffle(e88KmPoints).slice(0, 2).forEach(km => {
+      const tmpl = incidentTemplates[Math.floor(Math.random() * incidentTemplates.length)];
+      const dir = Math.random() > 0.5 ? '東向' : '西向';
+      newIncidents.push({
+        id: `inc_e88_${km}_${Date.now()}`,
+        highwayId: 'e88',
+        km: km,
+        direction: dir,
+        type: tmpl.type,
+        title: tmpl.title,
+        severity: tmpl.severity,
+        speedDrop: tmpl.speedDrop,
+        icon: tmpl.icon,
+        desc: tmpl.desc,
+        locationName: `台88線 ${dir} ${km.toFixed(1)}K`,
+        timestamp: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })
+      });
+    });
+
     this.incidentsSeed = newIncidents;
   }
 
@@ -95,8 +117,13 @@ class TrafficEngine {
     if (startIndex === -1 || endIndex === -1) return null;
 
     const isSouthbound = startIndex < endIndex;
-    const directionName = isSouthbound ? '南下 (Southbound)' : '北上 (Northbound)';
-    const dirTag = isSouthbound ? '南向' : '北向';
+    let directionName = isSouthbound ? '南下 (Southbound)' : '北上 (Northbound)';
+    let dirTag = isSouthbound ? '南向' : '北向';
+
+    if (highwayId === 'e88') {
+      directionName = isSouthbound ? '東向 (Eastbound 往萬丹/竹田)' : '西向 (Westbound 往鳳山/高雄)';
+      dirTag = isSouthbound ? '東向' : '西向';
+    }
 
     // 取得途經的所有交流道節點
     const step = isSouthbound ? 1 : -1;
