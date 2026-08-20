@@ -126,7 +126,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // ----------------------------------------------------
 
   function renderCountyChips() {
-    const hw = HIGHWAY_DATA[currentHighwayId];
+    let counties = [];
+    if (currentHighwayId === 'cross') {
+      const set = new Set();
+      ['n1', 'n3', 'e88'].forEach(k => {
+        if (HIGHWAY_DATA[k]) HIGHWAY_DATA[k].counties.forEach(c => set.add(c));
+      });
+      counties = Array.from(set);
+    } else {
+      const hw = HIGHWAY_DATA[currentHighwayId];
+      if (!hw) return;
+      counties = hw.counties;
+    }
+
     countyChipsContainer.innerHTML = '';
 
     const allChip = document.createElement('div');
@@ -139,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     countyChipsContainer.appendChild(allChip);
 
-    hw.counties.forEach(county => {
+    counties.forEach(county => {
       const chip = document.createElement('div');
       chip.className = `county-chip ${currentCountyFilter === county ? 'active' : ''}`;
       chip.textContent = county;
@@ -154,17 +166,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function populateInterchangeSelects() {
     if (currentHighwayId === 'cross') {
+      const curStart = startSelect.value;
+      const curEnd = endSelect.value;
+
       startSelect.innerHTML = '';
       endSelect.innerHTML = '';
 
       ['n1', 'n3', 'e88'].forEach(hwKey => {
         const hw = HIGHWAY_DATA[hwKey];
+        if (!hw) return;
+        let list = hw.interchanges;
+        if (currentCountyFilter !== 'ALL') {
+          list = hw.interchanges.filter(item => item.county === currentCountyFilter);
+        }
+        if (list.length === 0) return;
+
         const group1 = document.createElement('optgroup');
         group1.label = hw.name;
         const group2 = document.createElement('optgroup');
         group2.label = hw.name;
 
-        hw.interchanges.forEach(item => {
+        list.forEach(item => {
           const opt1 = document.createElement('option');
           opt1.value = item.id;
           opt1.textContent = `[${hw.shortName}] ${item.km.toFixed(1)}K ${item.name} (${item.county})`;
@@ -181,7 +203,17 @@ document.addEventListener('DOMContentLoaded', () => {
         endSelect.appendChild(group2);
       });
 
-      setSelectValues('n1_33', 'e88_22');
+      if (curStart && startSelect.querySelector(`option[value="${curStart}"]`)) {
+        startSelect.value = curStart;
+      } else {
+        startSelect.value = 'n1_33';
+      }
+
+      if (curEnd && endSelect.querySelector(`option[value="${curEnd}"]`)) {
+        endSelect.value = curEnd;
+      } else {
+        endSelect.value = 'e88_22';
+      }
       return;
     }
 
