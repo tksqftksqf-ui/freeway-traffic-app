@@ -158,6 +158,13 @@ body {
   grid-template-columns: 380px 1fr;
   gap: 24px;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.main-layout > * {
+  min-width: 0;
 }
 
 .sidebar {
@@ -165,6 +172,7 @@ body {
   flex-direction: column;
   gap: 20px;
   width: 100%;
+  min-width: 0;
 }
 
 .card {
@@ -425,11 +433,14 @@ body {
   flex-direction: column;
   gap: 24px;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .summary-card {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 16px;
   background: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -437,6 +448,9 @@ body {
   padding: 24px;
   box-shadow: var(--shadow-card);
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .stat-box {
@@ -488,6 +502,9 @@ body {
   position: relative;
   box-shadow: 0 10px 30px rgba(245, 158, 11, 0.1);
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .detour-card.smooth-route {
