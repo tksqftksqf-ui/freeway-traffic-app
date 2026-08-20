@@ -204,6 +204,30 @@ class TrafficEngine {
       // 限制速度區間 15 km/h ~ 110 km/h
       let speed = Math.max(15, Math.min(110, Math.round(baseSpeed)));
 
+      // 若為常態瓶頸且車速降低，自動補上瓶頸警報項目
+      if (isBottleneck && speed < 70) {
+        const bNode = fromNode.name.includes('鼎金') || fromNode.name.includes('林口') || fromNode.name.includes('湖口') || fromNode.name.includes('彰化') || fromNode.name.includes('大雅') || fromNode.name.includes('土城') || fromNode.name.includes('霧峰') ? fromNode : toNode;
+        const bInc = {
+          id: `bottleneck_${bNode.id}`,
+          highwayId: highwayId,
+          km: bNode.km,
+          type: 'bottleneck',
+          title: '車流匯集常態瓶頸',
+          severity: speed < 45 ? 'high' : 'medium',
+          speedDrop: 25,
+          icon: '🚦',
+          desc: `車流匯集交會減速，即時車速降低至 ${speed} km/h。`,
+          locationName: `${hwData.shortName} ${bNode.name}`,
+          nearestInterchangeName: `${bNode.name} (${bNode.km.toFixed(1)}K)`
+        };
+        if (!segIncidents.some(i => i.nearestInterchangeName === bInc.nearestInterchangeName)) {
+          segIncidents.push(bInc);
+          if (!activeIncidents.some(i => i.nearestInterchangeName === bInc.nearestInterchangeName)) {
+            activeIncidents.push(bInc);
+          }
+        }
+      }
+
       if (speed < worstSpeed) worstSpeed = speed;
       totalSpeedSum += speed * segDistance;
 
@@ -259,7 +283,7 @@ class TrafficEngine {
         detourTravelMins: detourTravelMins,
         minutesSaved: minutesSaved,
         reason: activeIncidents.length > 0 
-          ? `該路段目前發生 ${activeIncidents.length} 起事故/施工（最慢車速僅 ${worstSpeed} km/h），建議改道避免二次堵塞。`
+          ? `該路段目前通報 ${activeIncidents.length} 起事故/施工/車流瓶頸（最慢車速僅 ${worstSpeed} km/h）：`
           : (averageSpeed < 60 ? `行車車多壅塞（平均車速 ${averageSpeed} km/h），建議評估替代路線。` : '目前路況順暢，行駛原國道最為迅速！')
       }
     };
