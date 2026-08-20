@@ -57,6 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setSelectValues('n3_35', 'n3_79'); // 中和 -> 關西
       } else if (currentHighwayId === 'e88') {
         setSelectValues('e88_0', 'e88_21'); // 五甲系統 -> 竹田系統
+      } else if (currentHighwayId === 'cross') {
+        setSelectValues('n1_33', 'e88_22'); // 五股 (國1) -> 竹田端 (台88)
       }
       performQuery();
     });
@@ -151,6 +153,38 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function populateInterchangeSelects() {
+    if (currentHighwayId === 'cross') {
+      startSelect.innerHTML = '';
+      endSelect.innerHTML = '';
+
+      ['n1', 'n3', 'e88'].forEach(hwKey => {
+        const hw = HIGHWAY_DATA[hwKey];
+        const group1 = document.createElement('optgroup');
+        group1.label = hw.name;
+        const group2 = document.createElement('optgroup');
+        group2.label = hw.name;
+
+        hw.interchanges.forEach(item => {
+          const opt1 = document.createElement('option');
+          opt1.value = item.id;
+          opt1.textContent = `[${hw.shortName}] ${item.km.toFixed(1)}K ${item.name} (${item.county})`;
+
+          const opt2 = document.createElement('option');
+          opt2.value = item.id;
+          opt2.textContent = `[${hw.shortName}] ${item.km.toFixed(1)}K ${item.name} (${item.county})`;
+
+          group1.appendChild(opt1);
+          group2.appendChild(opt2);
+        });
+
+        startSelect.appendChild(group1);
+        endSelect.appendChild(group2);
+      });
+
+      setSelectValues('n1_33', 'e88_22');
+      return;
+    }
+
     const hw = HIGHWAY_DATA[currentHighwayId];
     let filteredList = hw.interchanges;
 
@@ -322,6 +356,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const segments = result.segments;
 
     segments.forEach((seg, idx) => {
+      if (seg.isTransfer) {
+        const transferNodeEl = document.createElement('div');
+        transferNodeEl.className = 'timeline-node';
+        transferNodeEl.innerHTML = `
+          <div class="node-dot" style="background:#F59E0B; border-color:#FBBF24;"></div>
+          <div class="node-name" style="color:#FBBF24; font-weight:800; white-space:nowrap; min-width:140px;">${seg.transferName}</div>
+        `;
+        timelineContainer.appendChild(transferNodeEl);
+        return;
+      }
+
       // 節點 1
       if (idx === 0) {
         const startNodeEl = document.createElement('div');

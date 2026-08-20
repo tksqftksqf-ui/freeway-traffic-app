@@ -107,6 +107,13 @@ class TrafficEngine {
    * 計算特定路段即時速與路況評估
    */
   evaluateRoute(highwayId, startInterchangeId, endInterchangeId) {
+    const startHwId = startInterchangeId ? startInterchangeId.split('_')[0] : highwayId;
+    const endHwId = endInterchangeId ? endInterchangeId.split('_')[0] : highwayId;
+
+    if (startHwId !== endHwId) {
+      return this.evaluateCrossRoute(startHwId, startInterchangeId, endHwId, endInterchangeId);
+    }
+
     const hwData = HIGHWAY_DATA[highwayId];
     if (!hwData) return null;
 
@@ -253,5 +260,67 @@ class TrafficEngine {
     } else {
       return { level: 'stuck', label: '紫爆/定點停滯', color: '#6554C0', bg: 'rgba(101, 84, 192, 0.22)', border: '#6554C0', icon: '🟣' };
     }
+  }
+
+  evaluateCrossRoute(startHwId, startId, endHwId, endId) {
+    const startHw = HIGHWAY_DATA[startHwId];
+    const endHw = HIGHWAY_DATA[endHwId];
+    if (!startHw || !endHw) return null;
+
+    const startNode = startHw.interchanges.find(i => i.id === startId);
+    const endNode = endHw.interchanges.find(i => i.id === endId);
+    if (!startNode || !endNode) return null;
+
+    const transfer = this.findTransferInterchanges(startHwId, startNode.km, endHwId, endNode.km);
+    if (!transfer) return null;
+
+    const leg1 = this.evaluateRoute(startHwId, startId, transfer.startTransferId);
+    const leg2 = this.evaluateRoute(endHwId, transfer.endTransferId, endId);
+
+    if (!leg1 || !leg2) return null;
+
+    const totalDistance = Math.round((leg1.totalDistance + leg2.totalDistance) * 10) / 10;
+    const totalTravelMinutes = leg1.totalTravelMinutes + leg2.totalTravelMinutes + 3;
+    const averageSpeed = totalDistance > 0 ? Math.round((totalDistance / (totalTravelMinutes / 60))) : 80;
+    const overallStatus = this.getSpeedStatus(averageSpeed);
+
+    return {
+      isCrossRoute: true,
+      highway: { name: `${startHw.shortName} 🔀 ${endHw.shortName}`, shortName: '跨路線轉乘' },
+      start: startNode,
+      end: endNode,
+      transferInfo: transfer,
+      directionName: `${leg1.directionName} ➔ 於${transfer.name}轉匯 ➔ ${leg2.directionName}`,
+      directionTag: '跨線轉乘',
+      totalDistance: totalDistance,
+      totalTravelMinutes: totalTravelMinutes,
+      averageSpeed: averageSpeed,
+      overallStatus: overallStatus,
+      segments: [...leg1.segments, { isTransfer: true, transferName: `🔀 於 ${transfer.name} 轉匯` }, ...leg2.segments],
+      incidents: [...leg1.incidents, ...leg2.incidents],
+      detourAdvice: leg1.detourAdvice.recommended ? leg1.detourAdvice : leg2.detourAdvice
+    };
+  }
+
+  findTransferInterchanges(startHw, startKm, endHw, endKm) {
+    if ((startHw === 'n1' && endHw === 'e88') || (startHw === 'e88' && endHw === 'n1')) {
+      return { startTransferId: startHw === 'n1' ? 'n1_373' : 'e88_0', endTransferId: startHw === 'n1' ? 'e88_0' : 'n1_373', name: '五甲系統交流道' };
+    }
+    if ((startHw === 'n3' && endHw === 'e88') || (startHw === 'e88' && endHw === 'n3')) {
+      return { startTransferId: startHw === 'n3' ? 'n3_415' : 'e88_21', endTransferId: startHw === 'n3' ? 'e88_21' : 'n3_415', name: '竹田系統交流道' };
+    }
+    if ((startHw === 'n1' && endHw === 'n3') || (startHw === 'n3' && endHw === 'n1')) {
+      const avgKm = (startKm + endKm) / 2;
+      if (avgKm < 60) {
+        return { startTransferId: startHw === 'n1' ? 'n1_11' : 'n3_10', endTransferId: startHw === 'n1' ? 'n3_10' : 'n1_11', name: '汐止系統交流道' };
+      } else if (avgKm < 140) {
+        return { startTransferId: startHw === 'n1' ? 'n1_99' : 'n3_100', endTransferId: startHw === 'n1' ? 'n3_100' : 'n1_99', name: '新竹系統交流道' };
+      } else if (avgKm < 250) {
+        return { startTransferId: startHw === 'n1' ? 'n1_192' : 'n3_196', endTransferId: startHw === 'n1' ? 'n3_196' : 'n1_192', name: '彰化系統交流道' };
+      } else {
+        return { startTransferId: startHw === 'n1' ? 'n1_330' : 'n3_357', endTransferId: startHw === 'n1' ? 'n3_357' : 'n1_330', name: '仁德/關廟系統交流道' };
+      }
+    }
+    return null;
   }
 }
