@@ -148,6 +148,26 @@ class TrafficEngine {
     // 篩選本路段發生的事故與維護
     const activeIncidents = this.incidentsSeed.filter(inc => {
       return inc.highwayId === highwayId && inc.km >= minKm && inc.km <= maxKm;
+    }).map(inc => {
+      let nearestName = '';
+      if (interchanges.length > 0) {
+        let minDiff = 9999;
+        let nearestNode = null;
+        interchanges.forEach(node => {
+          const diff = Math.abs(node.km - inc.km);
+          if (diff < minDiff) {
+            minDiff = diff;
+            nearestNode = node;
+          }
+        });
+        if (nearestNode) {
+          nearestName = `${nearestNode.name} (${nearestNode.km.toFixed(1)}K)`;
+        }
+      }
+      return {
+        ...inc,
+        nearestInterchangeName: nearestName
+      };
     });
 
     // 分段計算車速 (Sub-segments)

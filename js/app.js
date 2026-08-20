@@ -346,6 +346,20 @@ document.addEventListener('DOMContentLoaded', () => {
           <div>
             <div class="detour-title">⚠️ 偵測到壅塞/事故！建議最佳改道路線</div>
             <div class="detour-reason">${detour.reason}</div>
+            ${result.incidents && result.incidents.length > 0 ? `
+              <div class="header-incidents-block" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+                ${result.incidents.map(inc => `
+                  <div style="background: rgba(239, 68, 68, 0.16); border: 1px solid rgba(239, 68, 68, 0.35); color: #FCA5A5; padding: 8px 14px; border-radius: 8px; font-size: 0.88rem; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.1rem; flex-shrink: 0;">${inc.icon}</span>
+                    <div>
+                      <strong style="color: #FEF2F2;">${inc.locationName} ${inc.title}</strong>
+                      ${inc.nearestInterchangeName ? `<span style="color: #FDE047; font-weight: 700; margin-left: 6px;">(靠近 ${inc.nearestInterchangeName})</span>` : ''}
+                      <span style="color: #CBD5E1; margin-left: 6px;">— ${inc.desc}</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
           </div>
           <div class="detour-badge">🛣️ 建議改道</div>
         </div>
@@ -455,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="incident-icon">${inc.icon}</div>
         <div class="incident-content">
           <div class="incident-header-row">
-            <span class="incident-location">${inc.locationName}</span>
+            <span class="incident-location">${inc.locationName} ${inc.nearestInterchangeName ? `<span style="color: #FDE047; font-weight: 700; margin-left: 6px;">(靠近 ${inc.nearestInterchangeName})</span>` : ''}</span>
             <span class="incident-time">通報時間: ${inc.timestamp}</span>
           </div>
           <div class="incident-title">${inc.title}</div>
