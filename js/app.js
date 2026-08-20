@@ -53,8 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
       // 設定該國道典型常用預設點
       if (currentHighwayId === 'n1') {
         setSelectValues('n1_33', 'n1_62'); // 五股 -> 中壢
-      } else {
+      } else if (currentHighwayId === 'n3') {
         setSelectValues('n3_35', 'n3_79'); // 中和 -> 關西
+      } else if (currentHighwayId === 'e88') {
+        setSelectValues('e88_0', 'e88_21'); // 五甲系統 -> 竹田系統
       }
       performQuery();
     });
@@ -175,8 +177,17 @@ document.addEventListener('DOMContentLoaded', () => {
       endSelect.appendChild(opt2);
     });
 
-    if (hw.interchanges.some(i => i.id === curStart)) startSelect.value = curStart;
-    if (hw.interchanges.some(i => i.id === curEnd)) endSelect.value = curEnd;
+    if (hw.interchanges.some(i => i.id === curStart)) {
+      startSelect.value = curStart;
+    } else {
+      startSelect.value = hw.interchanges[0].id;
+    }
+
+    if (hw.interchanges.some(i => i.id === curEnd) && curEnd !== startSelect.value) {
+      endSelect.value = curEnd;
+    } else {
+      endSelect.value = hw.interchanges[hw.interchanges.length - 1].id;
+    }
   }
 
   function setSelectValues(startId, endId) {

@@ -470,6 +470,9 @@ document.addEventListener('DOMContentLoaded', () => {
       startSel.appendChild(new Option(`${item.km}K ${item.name} (${item.county})`, item.id));
       endSel.appendChild(new Option(`${item.km}K ${item.name} (${item.county})`, item.id));
     });
+    if (hw.interchanges.length > 1) {
+      endSel.selectedIndex = hw.interchanges.length - 1;
+    }
   }
 
   function query() {
