@@ -332,6 +332,20 @@ document.addEventListener('DOMContentLoaded', () => {
             <div>
               <div class="detour-title">🟢 目前國道路況順暢，行駛原國道最快速！</div>
               <div class="detour-reason">${detour.reason}</div>
+              ${result.incidents && result.incidents.length > 0 ? `
+                <div class="header-incidents-block" style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+                  ${result.incidents.map(inc => `
+                    <div style="background: rgba(54, 179, 126, 0.15); border: 1px solid rgba(54, 179, 126, 0.3); color: #A7F3D0; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+                      <span>${inc.icon}</span>
+                      <div>
+                        <strong>${inc.locationName} ${inc.title}</strong>
+                        ${inc.nearestInterchangeName ? `<span style="color: #FDE047; font-weight: 700; margin-left: 6px;">(靠近 ${inc.nearestInterchangeName})</span>` : ''}
+                        <span style="color: #E2E8F0; margin-left: 6px;">— ${inc.desc}</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
             </div>
             <div class="detour-badge no-detour">👍 建議行駛原國道</div>
           </div>
