@@ -294,15 +294,15 @@ class TrafficEngine {
    */
   getSpeedStatus(speed) {
     if (speed >= 80) {
-      return { level: 'smooth', label: '順暢', color: '#00B8D9', bg: 'rgba(0, 184, 217, 0.12)', border: '#00B8D9', icon: '🟢' };
+      return { level: 'smooth', label: '順暢', color: '#047857', bg: '#ECFDF5', border: '#A7F3D0', icon: '🟢' };
     } else if (speed >= 60) {
-      return { level: 'moderate', label: '車多', color: '#36B37E', bg: 'rgba(54, 179, 126, 0.12)', border: '#36B37E', icon: '🟡' };
+      return { level: 'moderate', label: '車多', color: '#4D7C0F', bg: '#F7FEE7', border: '#D9F99D', icon: '🟡' };
     } else if (speed >= 40) {
-      return { level: 'heavy', label: '壅塞', color: '#FFAB00', bg: 'rgba(255, 171, 0, 0.15)', border: '#FFAB00', icon: '🟠' };
+      return { level: 'heavy', label: '壅塞', color: '#B45309', bg: '#FFFBEB', border: '#FDE68A', icon: '🟠' };
     } else if (speed >= 20) {
-      return { level: 'severe', label: '嚴重要塞', color: '#FF5630', bg: 'rgba(255, 86, 48, 0.18)', border: '#FF5630', icon: '🔴' };
+      return { level: 'severe', label: '嚴重要塞', color: '#B91C1C', bg: '#FEF2F2', border: '#FECACA', icon: '🔴' };
     } else {
-      return { level: 'stuck', label: '紫爆/定點停滯', color: '#6554C0', bg: 'rgba(101, 84, 192, 0.22)', border: '#6554C0', icon: '🟣' };
+      return { level: 'stuck', label: '紫爆/定點停滯', color: '#6D28D9', bg: '#FAF5FF', border: '#DDD6FE', icon: '🟣' };
     }
   }
 

@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
     summaryBox.innerHTML = `
       <div class="stat-box">
         <span class="stat-label">行駛路段與方向</span>
-        <span class="stat-value" style="font-size: 1.1rem; color: #38BDF8;">
+        <span class="stat-value" style="font-size: 1.15rem; color: #0284C7;">
           ${result.start.name} ➔ ${result.end.name}
         </span>
         <span class="stat-unit">${result.directionName} · 約 ${result.totalDistance} km</span>
@@ -355,12 +355,12 @@ document.addEventListener('DOMContentLoaded', () => {
               ${result.incidents && result.incidents.length > 0 ? `
                 <div class="header-incidents-block" style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
                   ${result.incidents.map(inc => `
-                    <div style="background: rgba(54, 179, 126, 0.15); border: 1px solid rgba(54, 179, 126, 0.3); color: #A7F3D0; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+                    <div style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
                       <span>${inc.icon}</span>
                       <div>
-                        <strong>${inc.locationName} ${inc.title}</strong>
-                        ${inc.nearestInterchangeName ? `<span style="color: #FDE047; font-weight: 700; margin-left: 6px;">(靠近 ${inc.nearestInterchangeName})</span>` : ''}
-                        <span style="color: #E2E8F0; margin-left: 6px;">— ${inc.desc}</span>
+                        <strong style="color: #065F46;">${inc.locationName} ${inc.title}</strong>
+                        ${inc.nearestInterchangeName ? `<span style="color: #B45309; font-weight: 700; margin-left: 6px;">(靠近 ${inc.nearestInterchangeName})</span>` : ''}
+                        <span style="color: #334155; margin-left: 6px;">— ${inc.desc}</span>
                       </div>
                     </div>
                   `).join('')}
@@ -383,12 +383,12 @@ document.addEventListener('DOMContentLoaded', () => {
             ${result.incidents && result.incidents.length > 0 ? `
               <div class="header-incidents-block" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
                 ${result.incidents.map(inc => `
-                  <div style="background: rgba(239, 68, 68, 0.16); border: 1px solid rgba(239, 68, 68, 0.35); color: #FCA5A5; padding: 8px 14px; border-radius: 8px; font-size: 0.88rem; display: flex; align-items: center; gap: 10px;">
+                  <div style="background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; padding: 8px 14px; border-radius: 8px; font-size: 0.88rem; display: flex; align-items: center; gap: 10px;">
                     <span style="font-size: 1.1rem; flex-shrink: 0;">${inc.icon}</span>
                     <div>
-                      <strong style="color: #FEF2F2;">${inc.locationName} ${inc.title}</strong>
-                      ${inc.nearestInterchangeName ? `<span style="color: #FDE047; font-weight: 700; margin-left: 6px;">(靠近 ${inc.nearestInterchangeName})</span>` : ''}
-                      <span style="color: #CBD5E1; margin-left: 6px;">— ${inc.desc}</span>
+                      <strong style="color: #991B1B;">${inc.locationName} ${inc.title}</strong>
+                      ${inc.nearestInterchangeName ? `<span style="color: #B45309; font-weight: 700; margin-left: 6px;">(靠近 ${inc.nearestInterchangeName})</span>` : ''}
+                      <span style="color: #475569; margin-left: 6px;">— ${inc.desc}</span>
                     </div>
                   </div>
                 `).join('')}
@@ -402,18 +402,18 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="comparison-box">
             <div class="box-tag">🚗 原國道路線 (${result.highway.shortName})</div>
             <div class="box-value">${result.totalTravelMinutes} 分鐘</div>
-            <div style="font-size: 0.8rem; color: #EF4444; margin-top: 4px;">最慢車速僅 ${result.worstSpeed} km/h</div>
+            <div style="font-size: 0.82rem; color: #DC2626; margin-top: 4px; font-weight: 600;">最慢車速僅 ${result.worstSpeed} km/h</div>
           </div>
 
           <div class="comparison-box alt-box">
             <div class="box-tag">🛣️ 建議改道路線：${rule.alternateRouteName}</div>
-            <div class="box-value" style="color: #FBBF24;">預估 ${detour.detourTravelMins} 分鐘</div>
-            ${detour.minutesSaved > 0 ? `<div class="save-time-highlight">⏱️ 預估可為您節省約 ${detour.minutesSaved} 分鐘行車時間！</div>` : '<div style="font-size: 0.8rem; color: #94A3B8;">行駛時間相近，但可避開停滯車陣與事故二次風險。</div>'}
+            <div class="box-value" style="color: #B45309;">預估 ${detour.detourTravelMins} 分鐘</div>
+            ${detour.minutesSaved > 0 ? `<div class="save-time-highlight" style="color: #047857; font-size: 0.85rem; font-weight: 700; margin-top: 4px;">⏱️ 預估可為您節省約 ${detour.minutesSaved} 分鐘行車時間！</div>` : '<div style="font-size: 0.82rem; color: #64748B;">行駛時間相近，但可避開停滯車陣與事故二次風險。</div>'}
           </div>
         </div>
 
         <div class="turn-instructions">
-          <div style="font-size: 0.88rem; font-weight: 700; color: #F8FAFC; margin-bottom: 10px;">📍 改道路線切換指引：</div>
+          <div style="font-size: 0.88rem; font-weight: 800; color: #0F172A; margin-bottom: 10px;">📍 改道路線切換指引：</div>
           <div class="instruction-step">
             <span class="step-num">1</span>
             <div><strong>駛離國道：</strong> ${rule.offRampInstruction}</div>
@@ -440,8 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const transferNodeEl = document.createElement('div');
         transferNodeEl.className = 'timeline-node';
         transferNodeEl.innerHTML = `
-          <div class="node-dot" style="background:#F59E0B; border-color:#FBBF24;"></div>
-          <div class="node-name" style="color:#FBBF24; font-weight:800; white-space:nowrap; min-width:140px;">${seg.transferName}</div>
+          <div class="node-dot" style="background:#B45309; border-color:#FDE68A;"></div>
+          <div class="node-name" style="color:#B45309; font-weight:800; white-space:nowrap; min-width:140px;">${seg.transferName}</div>
         `;
         timelineContainer.appendChild(transferNodeEl);
         return;

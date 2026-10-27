@@ -1,41 +1,55 @@
 /* ----------------------------------------------------
  * 國道1號與3號即時路況暨改道路線建議系統 - 視覺與設計系統
- * CSS Design System & Theme Styling
+ * CSS Design System & Theme Styling (Clean High-Contrast Light Theme)
  * ---------------------------------------------------- */
 
 :root {
   --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
   
-  /* 核心主題配色 */
-  --bg-dark: #0B0F19;
-  --bg-card: #151D2A;
-  --bg-card-hover: #1E293B;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --border-glow: rgba(0, 184, 217, 0.3);
+  /* 核心明亮主題配色 - 清晰、高對比、護眼 */
+  --bg-page: #F1F5F9;         /* 頁面柔和淺灰底色，長時間觀看舒適 */
+  --bg-card: #FFFFFF;         /* 卡片純白底色，層次分明 */
+  --bg-card-hover: #F8FAFC;
+  --bg-card-subtle: #F8FAFC;
+  --border-color: #E2E8F0;     /* 柔和邊框 */
+  --border-color-strong: #CBD5E1; /* 控制項邊框 */
+  --border-glow: rgba(37, 99, 235, 0.15);
   
-  /* 高公局路況綠/藍標籤 */
-  --n1-color: #00A36C;
-  --n1-bg: rgba(0, 163, 108, 0.15);
-  --n3-color: #2563EB;
-  --n3-bg: rgba(37, 99, 235, 0.15);
+  /* 國道標籤色（高飽和度深色化，保證白底極致清晰） */
+  --n1-color: #047857;        /* 國1 綠色 */
+  --n1-bg: #ECFDF5;
+  --n1-border: #A7F3D0;
   
-  /* 路況燈號配色 */
-  --speed-smooth: #10B981;   /* 🟢 >80km/h 順暢 */
-  --speed-moderate: #84CC16; /* 🟡 60-80km/h 車多 */
-  --speed-heavy: #F59E0B;    /* 🟠 40-60km/h 壅塞 */
-  --speed-severe: #EF4444;   /* 🔴 20-40km/h 嚴重要塞 */
-  --speed-stuck: #A855F7;    /* 🟣 <20km/h 紫爆 */
+  --n3-color: #1D4ED8;        /* 國3 藍色 */
+  --n3-bg: #EFF6FF;
+  --n3-border: #BFDBFE;
+
+  --e88-color: #B45309;       /* 台88 琥珀色 */
+  --e88-bg: #FFFBEB;
+  --e88-border: #FDE68A;
+
+  --cross-color: #6D28D9;     /* 跨線 紫色 */
+  --cross-bg: #FAF5FF;
+  --cross-border: #DDD6FE;
   
-  /* 文字與圖標顏色 */
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  /* 路況燈號配色 (白底專用高對比深色) */
+  --speed-smooth: #047857;   /* 🟢 >80km/h 順暢 */
+  --speed-moderate: #4D7C0F; /* 🟡 60-80km/h 車多 */
+  --speed-heavy: #B45309;    /* 🟠 40-60km/h 壅塞 */
+  --speed-severe: #B91C1C;   /* 🔴 20-40km/h 嚴重要塞 */
+  --speed-stuck: #6D28D9;    /* 🟣 <20km/h 紫爆 */
+  
+  /* 文字顏色 (WCAG AAA 高對比) */
+  --text-primary: #0F172A;   /* 深墨藍黑，極致清晰 */
+  --text-secondary: #334155; /* 次要文字，銳利可辨 */
+  --text-muted: #64748B;     /* 說明與單位文字 */
   
   /* UI 陰影與圓角 */
   --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-card: 0 4px 16px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --shadow-card-hover: 0 8px 24px -4px rgba(15, 23, 42, 0.08);
   --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -54,14 +68,14 @@ html, body {
 
 body {
   font-family: var(--font-family);
-  background-color: var(--bg-dark);
+  background-color: var(--bg-page);
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
-  padding: 12px 8px;
+  padding: 16px 12px;
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(0, 163, 108, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 40%);
+    radial-gradient(circle at 10% 10%, rgba(4, 120, 87, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(29, 78, 216, 0.04) 0%, transparent 40%);
   background-attachment: fixed;
 }
 
@@ -78,13 +92,12 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 18px 24px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   margin-bottom: 24px;
   box-shadow: var(--shadow-card);
-  backdrop-filter: blur(12px);
 }
 
 .brand {
@@ -96,24 +109,25 @@ body {
 .brand-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #00A36C 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #059669 0%, #2563EB 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 26px;
-  box-shadow: 0 4px 15px rgba(0, 163, 108, 0.3);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
 }
 
 .brand-title h1 {
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
   color: var(--text-primary);
 }
 
 .brand-title p {
   font-size: 0.85rem;
+  font-weight: 500;
   color: var(--text-secondary);
 }
 
@@ -124,8 +138,8 @@ body {
 }
 
 .refresh-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-color);
+  background: #F8FAFC;
+  border: 1px solid var(--border-color-strong);
   color: var(--text-primary);
   padding: 10px 18px;
   border-radius: var(--radius-sm);
@@ -134,13 +148,13 @@ body {
   align-items: center;
   gap: 8px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: var(--transition-fast);
 }
 
 .refresh-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: #EDF2F7;
+  border-color: #94A3B8;
   transform: translateY(-1px);
 }
 
@@ -188,7 +202,7 @@ body {
 
 .card-title {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 18px;
   display: flex;
   align-items: center;
@@ -206,8 +220,8 @@ body {
 .highway-tab {
   padding: 10px 4px;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.04);
-  border: 2px solid transparent;
+  background: #F8FAFC;
+  border: 2px solid var(--border-color);
   color: var(--text-secondary);
   cursor: pointer;
   text-align: center;
@@ -220,35 +234,40 @@ body {
   gap: 3px;
 }
 
+.highway-tab:hover {
+  background: #EDF2F7;
+  color: var(--text-primary);
+}
+
 .highway-tab small {
   font-size: 0.68rem;
-  font-weight: 400;
-  opacity: 0.8;
+  font-weight: 500;
+  opacity: 0.85;
   white-space: nowrap;
 }
 
 .highway-tab.active[data-hw="n1"] {
   background: var(--n1-bg);
   border-color: var(--n1-color);
-  color: #34D399;
+  color: var(--n1-color);
 }
 
 .highway-tab.active[data-hw="n3"] {
   background: var(--n3-bg);
   border-color: var(--n3-color);
-  color: #60A5FA;
+  color: var(--n3-color);
 }
 
 .highway-tab.active[data-hw="e88"] {
-  background: rgba(217, 119, 6, 0.18);
-  border-color: #D97706;
-  color: #FBBF24;
+  background: var(--e88-bg);
+  border-color: var(--e88-color);
+  color: var(--e88-color);
 }
 
 .highway-tab.active[data-hw="cross"] {
-  background: rgba(168, 85, 247, 0.18);
-  border-color: #A855F7;
-  color: #C084FC;
+  background: var(--cross-bg);
+  border-color: var(--cross-color);
+  color: var(--cross-color);
 }
 
 .form-group {
@@ -259,7 +278,7 @@ body {
 .form-label {
   display: block;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-secondary);
   margin-bottom: 8px;
 }
@@ -276,21 +295,22 @@ body {
 }
 
 .county-chip {
-  padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
+  padding: 5px 12px;
+  background: #F8FAFC;
+  border: 1px solid var(--border-color-strong);
   border-radius: 20px;
   font-size: 0.78rem;
   white-space: nowrap;
   cursor: pointer;
   color: var(--text-secondary);
+  font-weight: 600;
   transition: var(--transition-fast);
 }
 
 .county-chip.active, .county-chip:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
 }
 
 .select-wrapper {
@@ -301,21 +321,26 @@ body {
 .select-control {
   width: 100%;
   padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--border-color);
+  background: #FFFFFF;
+  border: 1px solid var(--border-color-strong);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-size: 0.95rem;
   font-family: inherit;
+  font-weight: 600;
   outline: none;
   cursor: pointer;
   appearance: none;
   transition: var(--transition-fast);
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
 }
 
 .select-control:focus {
-  border-color: var(--n1-color);
-  box-shadow: 0 0 0 3px rgba(0, 163, 108, 0.2);
+  border-color: #1D4ED8;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
 }
 
 .swap-btn-container {
@@ -325,8 +350,8 @@ body {
 }
 
 .swap-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--border-color);
+  background: #F1F5F9;
+  border: 1px solid var(--border-color-strong);
   color: var(--text-primary);
   width: 36px;
   height: 36px;
@@ -336,11 +361,12 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 16px;
+  font-weight: 700;
   transition: var(--transition-fast);
 }
 
 .swap-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #E2E8F0;
   transform: rotate(180deg);
 }
 
@@ -352,7 +378,7 @@ body {
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #00A36C 0%, #059669 100%);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
   border: none;
   color: white;
   padding: 14px;
@@ -361,18 +387,18 @@ body {
   font-weight: 700;
   cursor: pointer;
   transition: var(--transition-fast);
-  box-shadow: 0 4px 15px rgba(0, 163, 108, 0.3);
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.25);
 }
 
 .primary-btn:hover {
-  opacity: 0.92;
+  opacity: 0.94;
   transform: translateY(-1px);
 }
 
 .bookmark-btn {
-  background: rgba(255, 215, 0, 0.12);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  color: #FBBF24;
+  background: #FFFBEB;
+  border: 1px solid #FCD34D;
+  color: #B45309;
   padding: 0 16px;
   border-radius: var(--radius-sm);
   font-size: 1.1rem;
@@ -384,7 +410,7 @@ body {
 }
 
 .bookmark-btn:hover {
-  background: rgba(255, 215, 0, 0.25);
+  background: #FEF3C7;
 }
 
 .presets-list {
@@ -398,7 +424,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.04);
+  background: #F8FAFC;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -406,8 +432,8 @@ body {
 }
 
 .preset-item:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: #EFF6FF;
+  border-color: #BFDBFE;
 }
 
 .preset-info {
@@ -424,15 +450,16 @@ body {
 .preset-delete {
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: #94A3B8;
   cursor: pointer;
   padding: 4px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  font-weight: bold;
   transition: var(--transition-fast);
 }
 
 .preset-delete:hover {
-  color: #EF4444;
+  color: #DC2626;
 }
 
 .content-area {
@@ -463,15 +490,16 @@ body {
 .stat-box {
   display: flex;
   flex-direction: column;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  padding: 14px;
+  background: #F8FAFC;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
 }
 
 .stat-label {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--text-muted);
   margin-bottom: 4px;
 }
 
@@ -485,9 +513,9 @@ body {
 }
 
 .stat-unit {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
 }
 
 .status-badge {
@@ -502,12 +530,12 @@ body {
 }
 
 .detour-card {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: #FFFBEB;
+  border: 1.5px solid #F59E0B;
   border-radius: var(--radius-lg);
   padding: 24px;
   position: relative;
-  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.1);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.08);
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -515,8 +543,9 @@ body {
 }
 
 .detour-card.smooth-route {
-  border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.05);
+  background: #F0FDF4;
+  border-color: #10B981;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.08);
 }
 
 .detour-header {
@@ -527,9 +556,9 @@ body {
 }
 
 .detour-badge {
-  background: rgba(245, 158, 11, 0.2);
-  color: #FBBF24;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FCD34D;
   padding: 6px 14px;
   border-radius: 20px;
   font-weight: 700;
@@ -540,21 +569,22 @@ body {
 }
 
 .detour-badge.no-detour {
-  background: rgba(16, 185, 129, 0.2);
-  color: #34D399;
-  border-color: rgba(16, 185, 129, 0.4);
+  background: #D1FAE5;
+  color: #065F46;
+  border-color: #6EE7B7;
 }
 
 .detour-title {
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .detour-reason {
-  font-size: 0.9rem;
-  color: #CBD5E1;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text-secondary);
   margin-bottom: 20px;
 }
 
@@ -568,37 +598,38 @@ body {
 .comparison-box {
   padding: 16px;
   border-radius: var(--radius-md);
-  background: rgba(0, 0, 0, 0.3);
+  background: #FFFFFF;
   border: 1px solid var(--border-color);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
 
 .comparison-box.alt-box {
-  border-color: rgba(245, 158, 11, 0.5);
-  background: rgba(245, 158, 11, 0.08);
+  border-color: #FCD34D;
+  background: #FFFDF5;
 }
 
 .box-tag {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: var(--text-secondary);
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 6px;
 }
 
 .box-value {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--text-primary);
 }
 
 .save-time-highlight {
-  color: #34D399;
+  color: #047857;
   font-size: 0.85rem;
   font-weight: 700;
   margin-top: 4px;
 }
 
 .turn-instructions {
-  background: rgba(255, 255, 255, 0.03);
+  background: #FFFFFF;
   border-radius: var(--radius-md);
   padding: 16px;
   border: 1px solid var(--border-color);
@@ -610,6 +641,7 @@ body {
   gap: 12px;
   margin-bottom: 10px;
   font-size: 0.88rem;
+  color: var(--text-primary);
 }
 
 .instruction-step:last-child {
@@ -617,8 +649,8 @@ body {
 }
 
 .step-num {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
+  background: #0F172A;
+  color: #FFFFFF;
   width: 22px;
   height: 22px;
   border-radius: 50%;
@@ -662,15 +694,16 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #334155;
-  border: 3px solid var(--bg-card);
-  box-shadow: 0 0 0 2px var(--text-muted);
+  background: #94A3B8;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 0 0 2px #CBD5E1;
   transition: var(--transition-fast);
 }
 
 .node-dot.endpoint {
-  background: #34D399;
-  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.4);
+  background: #047857;
+  border-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.35);
   width: 22px;
   height: 22px;
 }
@@ -678,12 +711,14 @@ body {
 .node-name {
   font-size: 0.85rem;
   font-weight: 700;
+  color: var(--text-primary);
   margin-top: 8px;
   white-space: nowrap;
 }
 
 .node-km {
   font-size: 0.75rem;
+  font-weight: 600;
   color: var(--text-muted);
 }
 
@@ -701,12 +736,13 @@ body {
 }
 
 .segment-speed-tag {
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid var(--border-color);
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   padding: 2px 8px;
   border-radius: 10px;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
   white-space: nowrap;
 }
 
@@ -722,20 +758,21 @@ body {
   align-items: flex-start;
   gap: 14px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
+  background: #F8FAFC;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   transition: var(--transition-fast);
 }
 
 .incident-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: #F1F5F9;
 }
 
 .incident-icon {
   font-size: 1.5rem;
   padding: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
 }
 
@@ -753,7 +790,7 @@ body {
 .incident-location {
   font-weight: 700;
   font-size: 0.95rem;
-  color: #F8FAFC;
+  color: var(--text-primary);
 }
 
 .incident-time {
@@ -763,8 +800,8 @@ body {
 
 .incident-title {
   font-size: 0.9rem;
-  font-weight: 600;
-  color: #FBBF24;
+  font-weight: 700;
+  color: #B45309;
   margin-bottom: 4px;
 }
 
