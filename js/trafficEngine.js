@@ -14,6 +14,7 @@ class TrafficEngine {
    */
   generateMockIncidents() {
     const incidentTemplates = [
+      { type: 'closure', title: '重大車禍起火主線全線封閉', severity: 'emergency', speedDrop: 110, icon: '⛔', desc: '槽車翻覆起火燃燒，全線雙向/主線全線封閉禁止通行，消防與高公局全力灌救處理中，請絕對不要進入該路段，配合警方引導改道！' },
       { type: 'accident', title: '小客車追撞事故', severity: 'high', speedDrop: 45, icon: '💥', desc: '占用內側車道，後方回堵約 2.5 公里，警方已抵達處理中。' },
       { type: 'accident', title: '大貨車翻覆/掉落物', severity: 'critical', speedDrop: 60, icon: '⚠️', desc: '占用中內側車道，掉落散落物清理中，建議提早改道。' },
       { type: 'construction', title: '路面高架修補施工', severity: 'medium', speedDrop: 25, icon: '🚧', desc: '封閉外側路肩與外側車道，工期至 17:00 止。' },
@@ -104,6 +105,39 @@ class TrafficEngine {
   }
 
   /**
+   * 模擬在當前路線中段發生重大全線封閉事件
+   */
+  simulateClosureForRoute(highwayId, startId, endId) {
+    let hw = highwayId === 'cross' ? startId.split('_')[0] : highwayId;
+    const hwData = HIGHWAY_DATA[hw];
+    if (!hwData) return;
+
+    const sNode = hwData.interchanges.find(i => i.id === startId) || hwData.interchanges[0];
+    const eNode = hwData.interchanges.find(i => i.id === endId) || hwData.interchanges[hwData.interchanges.length - 1];
+    const midKm = Math.round(((sNode.km + eNode.km) / 2) * 10) / 10;
+    const dir = sNode.km < eNode.km ? (hw === 'e88' ? '東向' : '南向') : (hw === 'e88' ? '西向' : '北向');
+
+    // 移除舊封閉
+    this.incidentsSeed = this.incidentsSeed.filter(i => i.type !== 'closure');
+
+    // 插入最前方高優先級全線封閉通報
+    this.incidentsSeed.unshift({
+      id: `closure_${hw}_${midKm}_${Date.now()}`,
+      highwayId: hw,
+      km: midKm,
+      direction: dir,
+      type: 'closure',
+      title: '重大事故主線全線封閉管制',
+      severity: 'emergency',
+      speedDrop: 110,
+      icon: '⛔',
+      desc: '聯結車翻覆橫躺阻斷全部車道，高公局啟動緊急管制【主線全線封閉禁止通行】，強制所有車流提前駛離改道！',
+      locationName: `${hwData.shortName} ${dir} ${midKm.toFixed(1)}K`,
+      timestamp: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })
+    });
+  }
+
+  /**
    * 計算特定路段即時速與路況評估
    */
   evaluateRoute(highwayId, startInterchangeId, endInterchangeId) {
@@ -185,6 +219,7 @@ class TrafficEngine {
 
       // 檢查此細分區段是否有事故或瓶頸（如林口坡、湖口段、大雅段等常塞車區域）
       const segIncidents = activeIncidents.filter(inc => inc.km >= segMinKm && inc.km <= segMaxKm);
+      const isSegClosed = segIncidents.some(inc => inc.type === 'closure' || inc.severity === 'emergency');
 
       // 基礎預估車速
       let baseSpeed = 95 + Math.floor(Math.sin(segMinKm * 0.1) * 12);
@@ -201,11 +236,11 @@ class TrafficEngine {
         baseSpeed -= inc.speedDrop;
       });
 
-      // 限制速度區間 15 km/h ~ 110 km/h
-      let speed = Math.max(15, Math.min(110, Math.round(baseSpeed)));
+      // 限制速度區間 15 km/h ~ 110 km/h (全線封閉則為 0)
+      let speed = isSegClosed ? 0 : Math.max(15, Math.min(110, Math.round(baseSpeed)));
 
       // 若為常態瓶頸且車速降低，自動補上瓶頸警報項目
-      if (isBottleneck && speed < 70) {
+      if (!isSegClosed && isBottleneck && speed < 70) {
         const bNode = fromNode.name.includes('鼎金') || fromNode.name.includes('林口') || fromNode.name.includes('湖口') || fromNode.name.includes('彰化') || fromNode.name.includes('大雅') || fromNode.name.includes('土城') || fromNode.name.includes('霧峰') ? fromNode : toNode;
         const bInc = {
           id: `bottleneck_${bNode.id}`,
@@ -229,31 +264,38 @@ class TrafficEngine {
       }
 
       if (speed < worstSpeed) worstSpeed = speed;
-      totalSpeedSum += speed * segDistance;
+      totalSpeedSum += (speed > 0 ? speed : 10) * segDistance;
 
       // 計算行駛分鐘數 = (距離 / 車速) * 60
-      const travelMins = Math.round((segDistance / speed) * 60);
+      const travelMins = speed > 0 ? Math.round((segDistance / speed) * 60) : 0;
       totalTravelMinutes += travelMins;
 
       // 取得狀態等級與燈號顏色
-      const statusInfo = this.getSpeedStatus(speed);
+      const statusInfo = isSegClosed 
+        ? { level: 'closed', label: '全線封閉', color: '#B91C1C', bg: '#FEF2F2', border: '#EF4444', icon: '⛔' }
+        : this.getSpeedStatus(speed);
 
       segments.push({
         from: fromNode,
         to: toNode,
         distance: Math.round(segDistance * 10) / 10,
         speed: speed,
+        isClosed: isSegClosed,
         travelMins: Math.max(1, travelMins),
         status: statusInfo,
         incidents: segIncidents
       });
     }
 
-    const averageSpeed = totalDistance > 0 ? Math.round(totalSpeedSum / totalDistance) : 90;
-    const overallStatus = this.getSpeedStatus(averageSpeed);
+    const closedIncidents = activeIncidents.filter(inc => inc.type === 'closure' || inc.severity === 'emergency');
+    const hasFullClosure = closedIncidents.length > 0;
+    const averageSpeed = hasFullClosure ? 0 : (totalDistance > 0 ? Math.round(totalSpeedSum / totalDistance) : 90);
+    const overallStatus = hasFullClosure 
+      ? { level: 'closed', label: '全線封閉禁止通行', color: '#B91C1C', bg: '#FEF2F2', border: '#EF4444', icon: '⛔' }
+      : this.getSpeedStatus(averageSpeed);
 
     // 評估改道路線 (Detour Recommendation)
-    const needsDetour = worstSpeed < 45 || activeIncidents.some(i => i.severity === 'high' || i.severity === 'critical');
+    const needsDetour = hasFullClosure || worstSpeed < 45 || activeIncidents.some(i => i.severity === 'high' || i.severity === 'critical');
     const detourRule = findBestDetourRule(highwayId, startKm, endKm);
 
     // 估算替代道路的時間與距離
@@ -274,17 +316,22 @@ class TrafficEngine {
       averageSpeed: averageSpeed,
       worstSpeed: worstSpeed,
       overallStatus: overallStatus,
+      hasFullClosure: hasFullClosure,
+      closedIncidents: closedIncidents,
       segments: segments,
       incidents: activeIncidents,
       detourAdvice: {
         recommended: needsDetour || minutesSaved > 5,
+        mandatory: hasFullClosure,
         rule: detourRule,
         detourDistance: detourDistance,
         detourTravelMins: detourTravelMins,
         minutesSaved: minutesSaved,
-        reason: activeIncidents.length > 0 
-          ? `該路段目前通報 ${activeIncidents.length} 起事故/施工/車流瓶頸（最慢車速僅 ${worstSpeed} km/h）：`
-          : (averageSpeed < 60 ? `行車車多壅塞（平均車速 ${averageSpeed} km/h），建議評估替代路線。` : '目前路況順暢，行駛原國道最為迅速！')
+        reason: hasFullClosure
+          ? `🚨 緊急通報：該路段目前發生【全線封閉禁止通行】，原國道已完全中斷，系統已強制啟動最佳替代改道路線！`
+          : (activeIncidents.length > 0 
+              ? `該路段目前通報 ${activeIncidents.length} 起事故/施工/車流瓶頸（最慢車速僅 ${worstSpeed} km/h）：`
+              : (averageSpeed < 60 ? `行車車多壅塞（平均車速 ${averageSpeed} km/h），建議評估替代路線。` : '目前路況順暢，行駛原國道最為迅速！'))
       }
     };
   }
@@ -326,7 +373,11 @@ class TrafficEngine {
     const totalDistance = Math.round((leg1.totalDistance + leg2.totalDistance) * 10) / 10;
     const totalTravelMinutes = leg1.totalTravelMinutes + leg2.totalTravelMinutes + 3;
     const averageSpeed = totalDistance > 0 ? Math.round((totalDistance / (totalTravelMinutes / 60))) : 80;
-    const overallStatus = this.getSpeedStatus(averageSpeed);
+    const hasFullClosure = Boolean(leg1?.hasFullClosure || leg2?.hasFullClosure);
+    const closedIncidents = [...(leg1?.closedIncidents || []), ...(leg2?.closedIncidents || [])];
+    const overallStatus = hasFullClosure 
+      ? { level: 'closed', label: '全線封閉禁止通行', color: '#B91C1C', bg: '#FEF2F2', border: '#EF4444', icon: '⛔' }
+      : this.getSpeedStatus(averageSpeed);
 
     return {
       isCrossRoute: true,
@@ -338,8 +389,10 @@ class TrafficEngine {
       directionTag: '跨線轉乘',
       totalDistance: totalDistance,
       totalTravelMinutes: totalTravelMinutes,
-      averageSpeed: averageSpeed,
+      averageSpeed: hasFullClosure ? 0 : averageSpeed,
       overallStatus: overallStatus,
+      hasFullClosure: hasFullClosure,
+      closedIncidents: closedIncidents,
       segments: [...leg1.segments, { isTransfer: true, transferName: `🔀 於 ${transfer.name} 轉匯` }, ...leg2.segments],
       incidents: [...leg1.incidents, ...leg2.incidents],
       detourAdvice: leg1.detourAdvice.recommended ? leg1.detourAdvice : leg2.detourAdvice

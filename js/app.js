@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const queryBtn = document.getElementById('queryBtn');
   const bookmarkBtn = document.getElementById('bookmarkBtn');
   const refreshBtn = document.getElementById('refreshBtn');
+  const closureTestBtn = document.getElementById('closureTestBtn');
   const countyChipsContainer = document.getElementById('countyChips');
   const presetsList = document.getElementById('presetsList');
 
@@ -87,6 +88,16 @@ document.addEventListener('DOMContentLoaded', () => {
       refreshBtn.classList.remove('spinning');
     }, 400);
   });
+
+  // 5.1 模擬全線封閉警示測試
+  if (closureTestBtn) {
+    closureTestBtn.addEventListener('click', () => {
+      const startId = startSelect.value;
+      const endId = endSelect.value;
+      engine.simulateClosureForRoute(currentHighwayId, startId, endId);
+      performQuery();
+    });
+  }
 
   // 6. 儲存至常用路線 (Bookmark)
   bookmarkBtn.addEventListener('click', () => {
@@ -306,6 +317,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderSummary(result) {
     const status = result.overallStatus;
+    const isClosed = result.hasFullClosure;
+
     summaryBox.innerHTML = `
       <div class="stat-box">
         <span class="stat-label">行駛路段與方向</span>
@@ -315,25 +328,25 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="stat-unit">${result.directionName} · 約 ${result.totalDistance} km</span>
       </div>
 
-      <div class="stat-box">
-        <span class="stat-label">平均時速評估</span>
+      <div class="stat-box" ${isClosed ? 'style="background: #FEF2F2; border: 1.5px solid #FCA5A5;"' : ''}>
+        <span class="stat-label" ${isClosed ? 'style="color: #991B1B; font-weight: 800;"' : ''}>平均時速評估</span>
         <span class="stat-value" style="color: ${status.color};">
           ${result.averageSpeed} <span class="stat-unit">km/h</span>
         </span>
-        <span class="stat-unit">最低時速: ${result.worstSpeed} km/h</span>
+        <span class="stat-unit" ${isClosed ? 'style="color: #DC2626; font-weight: 800;"' : ''}>${isClosed ? '⛔ 全線通行中斷' : `最低時速: ${result.worstSpeed} km/h`}</span>
       </div>
 
-      <div class="stat-box">
-        <span class="stat-label">預估行駛時間</span>
-        <span class="stat-value">
-          ${result.totalTravelMinutes} <span class="stat-unit">分鐘</span>
+      <div class="stat-box" ${isClosed ? 'style="background: #FEF2F2; border: 1.5px solid #FCA5A5;"' : ''}>
+        <span class="stat-label" ${isClosed ? 'style="color: #991B1B; font-weight: 800;"' : ''}>預估行駛時間</span>
+        <span class="stat-value" ${isClosed ? 'style="color: #DC2626; font-size: 1.25rem;"' : ''}>
+          ${isClosed ? '無法通行' : `${result.totalTravelMinutes} <span class="stat-unit">分鐘</span>`}
         </span>
-        <span class="stat-unit">順暢正常時約 ${Math.round(result.totalDistance / 90 * 60)} 分鐘</span>
+        <span class="stat-unit" ${isClosed ? 'style="color: #DC2626; font-weight: 800;"' : ''}>${isClosed ? '⚠️ 需強制改道' : `順暢正常時約 ${Math.round(result.totalDistance / 90 * 60)} 分鐘`}</span>
       </div>
 
-      <div class="stat-box">
-        <span class="stat-label">整體即時路況</span>
-        <div class="status-badge" style="background: ${status.bg}; color: ${status.color}; border: 1px solid ${status.border}; margin-top: 4px;">
+      <div class="stat-box" ${isClosed ? 'style="background: #FEF2F2; border: 1.5px solid #FCA5A5;"' : ''}>
+        <span class="stat-label" ${isClosed ? 'style="color: #991B1B; font-weight: 800;"' : ''}>整體即時路況</span>
+        <div class="status-badge" style="background: ${status.bg}; color: ${status.color}; border: 1px solid ${status.border}; margin-top: 4px; ${isClosed ? 'font-weight: 900;' : ''}">
           ${status.icon} ${status.label}
         </div>
       </div>
@@ -344,6 +357,81 @@ document.addEventListener('DOMContentLoaded', () => {
     const detour = result.detourAdvice;
     const isRecommended = detour.recommended;
     const rule = detour.rule;
+    const isClosed = result.hasFullClosure;
+
+    if (isClosed) {
+      detourCardContainer.innerHTML = `
+        <div class="emergency-closure-box">
+          <div class="emergency-closure-header">
+            <div class="emergency-badge">🚨 重大緊急管制警報</div>
+            <div class="emergency-time">⚠️ 高公局交控中心緊急發布</div>
+          </div>
+          <div class="emergency-title">⛔ 該行走路線目前【全線封閉禁止通行】！</div>
+          <div class="emergency-desc">偵測到您欲行駛之路段發生嚴重事故或緊急管制，原國道已完全阻斷無法通行，請切勿進入！</div>
+
+          <div class="emergency-incidents-list">
+            ${(result.closedIncidents || []).map(inc => `
+              <div class="emergency-incident-pill">
+                <div class="emergency-incident-icon">⛔</div>
+                <div class="emergency-incident-content">
+                  <div class="emergency-incident-loc">
+                    <strong>${inc.locationName} ${inc.title}</strong>
+                    ${inc.nearestInterchangeName ? `<span class="emergency-incident-near">(靠近 ${inc.nearestInterchangeName})</span>` : ''}
+                  </div>
+                  <div class="emergency-incident-desc">${inc.desc}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="emergency-detour-notice">
+            <div class="detour-notice-icon">📢</div>
+            <div><strong>強制改道指令：</strong> 原國道路段已完全中斷！系統已為您啟動替代改道路線，請務必配合現場標誌提早於安全交流道駛離。</div>
+          </div>
+        </div>
+
+        <div class="detour-card" style="border: 2px solid #EF4444; background: #FFFDF5;">
+          <div class="detour-header">
+            <div>
+              <div class="detour-title" style="color: #991B1B;">🛣️ 系統指定避險改道路線：${rule.alternateRouteName}</div>
+              <div class="detour-reason">${detour.reason}</div>
+            </div>
+            <div class="detour-badge" style="background: #DC2626; color: #FFFFFF; border-color: #B91C1C;">⛔ 強制改道</div>
+          </div>
+
+          <div class="comparison-grid">
+            <div class="comparison-box" style="border-color: #F87171; background: #FEF2F2;">
+              <div class="box-tag" style="color: #991B1B;">🚗 原國道路線 (${result.highway ? result.highway.shortName : '國道'})</div>
+              <div class="box-value" style="color: #DC2626;">無法通行</div>
+              <div style="font-size: 0.85rem; color: #B91C1C; margin-top: 4px; font-weight: 700;">⛔ 全線封閉中斷 (時速 0 km/h)</div>
+            </div>
+
+            <div class="comparison-box alt-box" style="border-color: #10B981; background: #F0FDF4;">
+              <div class="box-tag" style="color: #065F46;">🛣️ 建議改道路線：${rule.alternateRouteName}</div>
+              <div class="box-value" style="color: #047857;">預估 ${detour.detourTravelMins} 分鐘</div>
+              <div class="save-time-highlight" style="color: #047857; font-size: 0.85rem; font-weight: 700; margin-top: 4px;">⚡ 唯一順暢可行替代路線！</div>
+            </div>
+          </div>
+
+          <div class="turn-instructions">
+            <div style="font-size: 0.88rem; font-weight: 800; color: #0F172A; margin-bottom: 10px;">📍 改道路線切換指引：</div>
+            <div class="instruction-step">
+              <span class="step-num" style="background: #DC2626;">1</span>
+              <div><strong>駛離國道：</strong> ${rule.offRampInstruction}</div>
+            </div>
+            <div class="instruction-step">
+              <span class="step-num" style="background: #DC2626;">2</span>
+              <div><strong>替代道路：</strong> 順行 ${rule.alternateRouteName}，沿途注意省道/快速道路速限指示與警力疏導。</div>
+            </div>
+            <div class="instruction-step">
+              <span class="step-num" style="background: #DC2626;">3</span>
+              <div><strong>重新匯入：</strong> ${rule.onRampInstruction}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      return;
+    }
 
     if (!isRecommended) {
       detourCardContainer.innerHTML = `
@@ -400,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="comparison-grid">
           <div class="comparison-box">
-            <div class="box-tag">🚗 原國道路線 (${result.highway.shortName})</div>
+            <div class="box-tag">🚗 原國道路線 (${result.highway ? result.highway.shortName : '國道'})</div>
             <div class="box-value">${result.totalTravelMinutes} 分鐘</div>
             <div style="font-size: 0.82rem; color: #DC2626; margin-top: 4px; font-weight: 600;">最慢車速僅 ${result.worstSpeed} km/h</div>
           </div>
@@ -461,11 +549,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // 路段條 Segment bar
       const segEl = document.createElement('div');
-      segEl.className = 'timeline-segment';
-      segEl.style.backgroundColor = seg.status.color;
+      segEl.className = `timeline-segment ${seg.isClosed ? 'closed-segment' : ''}`;
+      if (!seg.isClosed) {
+        segEl.style.backgroundColor = seg.status.color;
+      }
       segEl.innerHTML = `
-        <span class="segment-speed-tag" style="color: ${seg.status.color};">
-          ${seg.speed} km/h ${seg.incidents.length > 0 ? '⚠️' : ''}
+        <span class="segment-speed-tag ${seg.isClosed ? 'closed-tag' : ''}" style="${seg.isClosed ? '' : `color: ${seg.status.color};`}">
+          ${seg.isClosed ? '⛔ 全線封閉' : `${seg.speed} km/h ${seg.incidents.length > 0 ? '⚠️' : ''}`}
         </span>
       `;
       timelineContainer.appendChild(segEl);
@@ -475,8 +565,8 @@ document.addEventListener('DOMContentLoaded', () => {
       endNodeEl.className = 'timeline-node';
       const isLast = idx === segments.length - 1;
       endNodeEl.innerHTML = `
-        <div class="node-dot ${isLast ? 'endpoint' : ''}"></div>
-        <div class="node-name">${seg.to.name}</div>
+        <div class="node-dot ${isLast ? 'endpoint' : ''} ${seg.isClosed ? 'closed-node' : ''}"></div>
+        <div class="node-name" style="${seg.isClosed ? 'color: #DC2626; font-weight: 800;' : ''}">${seg.to.name}</div>
         <div class="node-km">${seg.to.km.toFixed(1)}K</div>
       `;
       timelineContainer.appendChild(endNodeEl);
