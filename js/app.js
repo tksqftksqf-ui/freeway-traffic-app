@@ -97,13 +97,30 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const hw = HIGHWAY_DATA[currentHighwayId];
-    const startNode = hw.interchanges.find(i => i.id === startId);
-    const endNode = hw.interchanges.find(i => i.id === endId);
+    let routeName = '';
+    if (currentHighwayId === 'cross') {
+      const startHwKey = startId.split('_')[0];
+      const endHwKey = endId.split('_')[0];
+      const startHw = HIGHWAY_DATA[startHwKey];
+      const endHw = HIGHWAY_DATA[endHwKey];
+      const startNode = startHw?.interchanges.find(i => i.id === startId);
+      const endNode = endHw?.interchanges.find(i => i.id === endId);
+      const startLabel = startNode ? `[${startHw.shortName}] ${startNode.name}` : startId;
+      const endLabel = endNode ? `[${endHw.shortName}] ${endNode.name}` : endId;
+      routeName = `跨線：${startLabel} ➔ ${endLabel}`;
+    } else {
+      const hw = HIGHWAY_DATA[currentHighwayId];
+      if (!hw) return;
+      const startNode = hw.interchanges.find(i => i.id === startId);
+      const endNode = hw.interchanges.find(i => i.id === endId);
+      const startLabel = startNode ? startNode.name : startId;
+      const endLabel = endNode ? endNode.name : endId;
+      routeName = `${hw.shortName}：${startLabel} ➔ ${endLabel}`;
+    }
 
     const presetId = `preset_${currentHighwayId}_${startId}_${endId}`;
     if (savedPresets.some(p => p.id === presetId)) {
-      alert('此路線已儲存在常用清單中！');
+      alert('此路線已儲存在常用清單中囉！');
       return;
     }
 
@@ -112,12 +129,13 @@ document.addEventListener('DOMContentLoaded', () => {
       highwayId: currentHighwayId,
       startId: startId,
       endId: endId,
-      name: `${hw.shortName}：${startNode.name} ➔ ${endNode.name}`
+      name: routeName
     };
 
     savedPresets.push(newPreset);
     localStorage.setItem('freeway_saved_presets', JSON.stringify(savedPresets));
     initPresetButtons();
+    alert(`⭐️ 已成功將「${routeName}」加入常用路線！`);
   });
 
   // 7. 初始執行首次查詢
