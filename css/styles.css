@@ -988,6 +988,42 @@ body {
   transform: translateY(-1px);
 }
 
+.closure-test-btn.restore-mode {
+  background: #ECFDF5;
+  border-color: #34D399;
+  color: #065F46;
+}
+
+.closure-test-btn.restore-mode:hover {
+  background: #D1FAE5;
+  border-color: #10B981;
+  color: #047857;
+  transform: translateY(-1px);
+}
+
+.dismiss-closure-btn {
+  background: #FFFFFF;
+  border: 1.5px solid #10B981;
+  color: #065F46;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition-fast);
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.15);
+}
+
+.dismiss-closure-btn:hover {
+  background: #ECFDF5;
+  border-color: #059669;
+  color: #047857;
+  transform: translateY(-1px);
+}
+
 .app-footer {
   text-align: center;
   padding: 24px 0;

@@ -14,7 +14,6 @@ class TrafficEngine {
    */
   generateMockIncidents() {
     const incidentTemplates = [
-      { type: 'closure', title: '重大車禍起火主線全線封閉', severity: 'emergency', speedDrop: 110, icon: '⛔', desc: '槽車翻覆起火燃燒，全線雙向/主線全線封閉禁止通行，消防與高公局全力灌救處理中，請絕對不要進入該路段，配合警方引導改道！' },
       { type: 'accident', title: '小客車追撞事故', severity: 'high', speedDrop: 45, icon: '💥', desc: '占用內側車道，後方回堵約 2.5 公里，警方已抵達處理中。' },
       { type: 'accident', title: '大貨車翻覆/掉落物', severity: 'critical', speedDrop: 60, icon: '⚠️', desc: '占用中內側車道，掉落散落物清理中，建議提早改道。' },
       { type: 'construction', title: '路面高架修補施工', severity: 'medium', speedDrop: 25, icon: '🚧', desc: '封閉外側路肩與外側車道，工期至 17:00 止。' },
@@ -135,6 +134,20 @@ class TrafficEngine {
       locationName: `${hwData.shortName} ${dir} ${midKm.toFixed(1)}K`,
       timestamp: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })
     });
+  }
+
+  /**
+   * 清除當前全線封閉事件 (還原正常路況)
+   */
+  clearClosure() {
+    this.incidentsSeed = this.incidentsSeed.filter(i => i.type !== 'closure' && i.severity !== 'emergency');
+  }
+
+  /**
+   * 檢查當前是否有全線封閉事件
+   */
+  hasActiveClosure() {
+    return this.incidentsSeed.some(i => i.type === 'closure' || i.severity === 'emergency');
   }
 
   /**

@@ -79,23 +79,30 @@ document.addEventListener('DOMContentLoaded', () => {
   startSelect.addEventListener('change', performQuery);
   endSelect.addEventListener('change', performQuery);
 
-  // 5. 重新整理 / 模擬更新
+  // 5. 重新整理 / 模擬更新 (清除模擬並刷新路況)
   refreshBtn.addEventListener('click', () => {
     refreshBtn.classList.add('spinning');
+    engine.clearClosure();
     engine.generateMockIncidents();
     setTimeout(() => {
       performQuery();
+      updateClosureBtnState();
       refreshBtn.classList.remove('spinning');
     }, 400);
   });
 
-  // 5.1 模擬全線封閉警示測試
+  // 5.1 模擬全線封閉警示測試與一鍵還原開關
   if (closureTestBtn) {
     closureTestBtn.addEventListener('click', () => {
-      const startId = startSelect.value;
-      const endId = endSelect.value;
-      engine.simulateClosureForRoute(currentHighwayId, startId, endId);
+      if (engine.hasActiveClosure()) {
+        engine.clearClosure();
+      } else {
+        const startId = startSelect.value;
+        const endId = endSelect.value;
+        engine.simulateClosureForRoute(currentHighwayId, startId, endId);
+      }
       performQuery();
+      updateClosureBtnState();
     });
   }
 
@@ -292,6 +299,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (endSelect.querySelector(`option[value="${endId}"]`)) endSelect.value = endId;
   }
 
+  function updateClosureBtnState() {
+    if (!closureTestBtn) return;
+    const hasClosure = engine.hasActiveClosure();
+    if (hasClosure) {
+      closureTestBtn.classList.add('restore-mode');
+      closureTestBtn.innerHTML = '<span>🟢 解除封閉 (還原)</span>';
+      closureTestBtn.title = '點擊立即解除全線封閉管制並還原正常路況';
+    } else {
+      closureTestBtn.classList.remove('restore-mode');
+      closureTestBtn.innerHTML = '<span>🚨 模擬全線封閉</span>';
+      closureTestBtn.title = '模擬當前路線全線封閉警示測試';
+    }
+  }
+
   function performQuery() {
     const startId = startSelect.value;
     const endId = endSelect.value;
@@ -313,6 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderDetourCard(result);
     renderVisualTimeline(result);
     if (incidentsListContainer) renderIncidentsList(result);
+    updateClosureBtnState();
   }
 
   function renderSummary(result) {
@@ -363,8 +385,13 @@ document.addEventListener('DOMContentLoaded', () => {
       detourCardContainer.innerHTML = `
         <div class="emergency-closure-box">
           <div class="emergency-closure-header">
-            <div class="emergency-badge">🚨 重大緊急管制警報</div>
-            <div class="emergency-time">⚠️ 高公局交控中心緊急發布</div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <div class="emergency-badge">🚨 重大緊急管制警報</div>
+              <div class="emergency-time">⚠️ 高公局交控中心緊急發布</div>
+            </div>
+            <button id="dismissClosureBtn" class="dismiss-closure-btn" title="立即解除模擬全線封閉管制並還原正常路況">
+              <span>🟢 一鍵解除封閉（還原正常）</span>
+            </button>
           </div>
           <div class="emergency-title">⛔ 該行走路線目前【全線封閉禁止通行】！</div>
           <div class="emergency-desc">偵測到您欲行駛之路段發生嚴重事故或緊急管制，原國道已完全阻斷無法通行，請切勿進入！</div>
@@ -430,6 +457,16 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
       `;
+
+      const dismissBtn = document.getElementById('dismissClosureBtn');
+      if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+          engine.clearClosure();
+          performQuery();
+          updateClosureBtnState();
+        });
+      }
+
       return;
     }
 
