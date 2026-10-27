@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 預設選取五股到中壢 (國1) 或 土城到關西 (國3)
   setSelectValues('n1_33', 'n1_62');
-  performQuery();
 
   // ----------------------------------------------------
   // 事件監聽 Event Listeners
@@ -120,6 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('freeway_saved_presets', JSON.stringify(savedPresets));
     initPresetButtons();
   });
+
+  // 7. 初始執行首次查詢
+  performQuery();
 
   // ----------------------------------------------------
   // 核心功能函數 Functions
@@ -271,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryBox.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color: #94A3B8; padding: 20px;">請選擇不同的起點與終點交流道。</div>`;
       detourCardContainer.innerHTML = '';
       timelineContainer.innerHTML = '';
-      incidentsListContainer.innerHTML = '';
+      if (incidentsListContainer) incidentsListContainer.innerHTML = '';
       return;
     }
 
@@ -281,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSummary(result);
     renderDetourCard(result);
     renderVisualTimeline(result);
-    renderIncidentsList(result);
+    if (incidentsListContainer) renderIncidentsList(result);
   }
 
   function renderSummary(result) {
@@ -464,6 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderIncidentsList(result) {
+    if (!incidentsListContainer) return;
     incidentsListContainer.innerHTML = '';
     const incidents = result.incidents;
 
